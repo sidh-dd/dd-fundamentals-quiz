@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Interactive Quiz</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #f7f9fc;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 900px;
+      margin: auto;
+      background: #fff;
+      padding: 24px;
+      border-radius: 8px;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    }
+    h1 {
+      margin-top: 0;
+    }
+    .question {
+      margin-bottom: 20px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid #e5e7eb;
+    }
+    .options label {
+      display: block;
+      margin: 6px 0;
+      cursor: pointer;
+    }
+    .correct {
+      color: #15803d;
+      font-weight: bold;
+    }
+    .incorrect {
+      color: #b91c1c;
+      font-weight: bold;
+    }
+    button {
+      background: #632ca6;
+      color: #fff;
+      border: none;
+      padding: 10px 16px;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    button:hover {
+      opacity: 0.9;
+    }
+    .score {
+      margin-top: 20px;
+      font-size: 18px;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h1>Datadog Fundamentals – Practice Exam</h1>
+    <p><strong>Free & open</strong> Datadog Fundamentals practice exam. This page is export-ready and can be hosted anywhere (GitHub Pages, Netlify, S3, etc.). No tracking, no backend.</p>
+
+    <div id="quiz"></div>
+
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <div id="score" class="score"></div>
+  </div>
+
+  <script>
+    const questions = [
+      {
+        q: "What is the primary purpose of the Datadog Agent?",
+        options: [
+          "Store metrics long-term",
+          "Collect and forward telemetry data",
+          "Create dashboards",
+          "Trigger alerts"
+        ],
+        answer: 1
+      },
+      {
+        q: "Which key is required for the Datadog Agent to send data?",
+        options: [
+          "Application key",
+          "SSH key",
+          "API key",
+          "OAuth token"
+        ],
+        answer: 2
+      },
+      {
+        q: "Which file contains the main Datadog Agent configuration?",
+        options: [
+          "/etc/datadog-agent/datadog.yaml",
+          "/etc/datadog-agent/agent.conf",
+          "/var/log/datadog/agent.log",
+          "/opt/datadog/config.yaml"
+        ],
+        answer: 0
+      },
+      {
+        q: "What protocol does DogStatsD use by default?",
+        options: [
+          "TCP",
+          "HTTP",
+          "UDP",
+          "HTTPS"
+        ],
+        answer: 2
+      },
+      {
+        q: "What are tags primarily used for in Datadog?",
+        options: [
+          "Encrypting data",
+          "Filtering and grouping data",
+          "Reducing ingestion cost",
+          "Compressing logs"
+        ],
+        answer: 1
+      }
+      // 👉 You can continue adding questions here up to 75
+    ];
+
+    const quizDiv = document.getElementById("quiz");
+
+    questions.forEach((item, index) => {
+      const qDiv = document.createElement("div");
+      qDiv.className = "question";
+
+      qDiv.innerHTML = `<p><strong>Q${index + 1}.</strong> ${item.q}</p>`;
+
+      const optionsDiv = document.createElement("div");
+      optionsDiv.className = "options";
+
+      item.options.forEach((opt, i) => {
+        optionsDiv.innerHTML += `
+          <label>
+            <input type="radio" name="q${index}" value="${i}" /> ${opt}
+          </label>
+        `;
+      });
+
+      qDiv.appendChild(optionsDiv);
+      quizDiv.appendChild(qDiv);
+    });
+
+    function submitQuiz() {
+      let score = 0;
+
+      questions.forEach((item, index) => {
+        const selected = document.querySelector(`input[name=\"q${index}\"]:checked`);
+        const qDiv = quizDiv.children[index];
+
+        const existingFeedback = qDiv.querySelector('.feedback');
+        if (existingFeedback) existingFeedback.remove();
+
+        const feedback = document.createElement('div');
+        feedback.className = 'feedback';
+
+        if (selected && parseInt(selected.value) === item.answer) {
+          score++;
+          feedback.textContent = '✔ Correct';
+          feedback.classList.add('correct');
+        } else {
+          feedback.textContent = `✖ Incorrect (Correct answer: ${item.options[item.answer]})`;
+          feedback.classList.add('incorrect');
+        }
+
+        qDiv.appendChild(feedback);
+      });
+
+      document.getElementById('score').textContent = `Score: ${score} / ${questions.length}`;
+    }
+  </script>
+</body>
+</html>
