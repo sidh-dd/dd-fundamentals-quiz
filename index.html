@@ -80,111 +80,192 @@
        ========================= */
     const quizSets = [
       {
-        name: "Set 1 – Agent & Basics",
+        name: "Set 1 – Agent & Core Fundamentals",
         questions: [
           {
             q: "What is the primary purpose of the Datadog Agent?",
-            options: [
-              "Store metrics long-term",
-              "Collect and forward telemetry data",
-              "Create dashboards",
-              "Trigger alerts"
-            ],
+            options: ["Store metrics long-term","Collect and forward telemetry data","Create dashboards","Trigger alerts"],
             answer: [1],
             ref: "https://docs.datadoghq.com/agent/"
           },
           {
-            q: "Which key is required for the Datadog Agent to send data?",
-            options: ["Application key", "SSH key", "API key", "OAuth token"],
+            q: "Which key is required for the Datadog Agent to send data to Datadog?",
+            options: ["Application key","OAuth token","API key","SSH key"],
             answer: [2],
             ref: "https://docs.datadoghq.com/account_management/api-app-keys/"
-          }
-        ]
-      },
-      {
-        name: "Set 2 – Metrics & Tags",
-        questions: [
+          },
           {
-            q: "What are tags primarily used for in Datadog?",
-            options: [
-              "Encrypting data",
-              "Filtering and grouping data",
-              "Reducing ingestion cost",
-              "Compressing logs"
-            ],
+            q: "Which file contains the main Datadog Agent configuration?",
+            options: ["/etc/datadog-agent/datadog.yaml","/etc/datadog-agent/agent.conf","/var/log/datadog/agent.log","/opt/datadog/config.yaml"],
+            answer: [0],
+            ref: "https://docs.datadoghq.com/agent/configuration/agent-configuration-files/"
+          },
+          {
+            q: "Which command provides a detailed overview of Agent status and checks?",
+            options: ["datadog-agent start","datadog-agent restart","datadog-agent status","datadog-agent install"],
+            answer: [2],
+            ref: "https://docs.datadoghq.com/agent/troubleshooting/"
+          },
+          {
+            q: "Which protocol does DogStatsD use by default?",
+            options: ["TCP","HTTP","UDP","HTTPS"],
+            answer: [2],
+            ref: "https://docs.datadoghq.com/developers/dogstatsd/"
+          },
+          {
+            q: "DogStatsD listens on which port by default?",
+            options: ["443","8125","10516","22"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/developers/dogstatsd/"
+          },
+          {
+            q: "What is an Application Key primarily used for?",
+            options: ["Sending metrics","Authenticating API requests","Encrypting logs","Installing the Agent"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/account_management/api-app-keys/"
+          },
+          {
+            q: "Which tagging format is recommended in Datadog?",
+            options: ["key=value","key:value","value-key","value:value"],
             answer: [1],
             ref: "https://docs.datadoghq.com/getting_started/tagging/"
+          },
+          {
+            q: "Tags in Datadog are primarily used to:",
+            options: ["Encrypt data","Filter and group data","Reduce latency","Store logs"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/getting_started/tagging/"
+          },
+          {
+            q: "Which Datadog feature provides a real-time visual map of hosts?",
+            options: ["Dashboards","Host Map","Logs Explorer","APM"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/infrastructure/hostmap/"
+          },
+          {
+            q: "What happens if the Datadog Agent cannot reach Datadog endpoints?",
+            options: ["Data is dropped","Agent shuts down","Data is buffered and retried","Logs are deleted"],
+            answer: [2],
+            ref: "https://docs.datadoghq.com/agent/troubleshooting/"
+          },
+          {
+            q: "Which integration feature automatically configures checks for containers?",
+            options: ["Manual configuration","DogStatsD","Auto-discovery","APM"],
+            answer: [2],
+            ref: "https://docs.datadoghq.com/agent/autodiscovery/"
+          },
+          {
+            q: "Which Linux resource represents processing capability?",
+            options: ["Disk","RAM","CPU","Filesystem"],
+            answer: [2],
+            ref: "https://docs.datadoghq.com/infrastructure/"
+          },
+          {
+            q: "Which protocol is used by HTTP?",
+            options: ["UDP","TCP","ICMP","ARP"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/agent/network/"
+          },
+          {
+            q: "Which Datadog monitor type is best for alerting on metric thresholds?",
+            options: ["Event monitor","Log monitor","Metric monitor","Process monitor"],
+            answer: [2],
+            ref: "https://docs.datadoghq.com/monitors/monitor_types/"
           }
         ]
       }
     ];
 
-    let currentSetIndex = Math.floor(Math.random() * quizSets.length);
-    let questions = quizSets[currentSetIndex].questions;
+    const QUESTIONS_PER_PAGE = 10;
+    let currentSetIndex = 0;
+    let currentPage = 0;
+    let userAnswers = {};
 
-    const quizDiv = document.getElementById("quiz");
-    const scoreDiv = document.getElementById("score");
+    const setSelect = document.getElementById('setSelect');
+
+    quizSets.forEach((set, i) => {
+      const opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = set.name;
+      setSelect.appendChild(opt);
+    });
+
+    let questions = quizSets[currentSetIndex].questions;
 
     function renderQuiz() {
       quizDiv.innerHTML = `<h2>${quizSets[currentSetIndex].name}</h2>`;
 
-      questions.forEach((item, index) => {
-        const qDiv = document.createElement("div");
-        qDiv.className = "question";
+      const start = currentPage * QUESTIONS_PER_PAGE;
+      const end = start + QUESTIONS_PER_PAGE;
+      const pageQuestions = questions.slice(start, end);
 
-        qDiv.innerHTML = `<p><strong>Q${index + 1}.</strong> ${item.q}</p>`;
+      pageQuestions.forEach((item, index) => {
+        const qIndex = start + index;
+        const qDiv = document.createElement('div');
+        qDiv.className = 'question';
+        qDiv.innerHTML = `<p><strong>Q${qIndex + 1}.</strong> ${item.q}</p>`;
 
-        const optionsDiv = document.createElement("div");
-        optionsDiv.className = "options";
+        const optionsDiv = document.createElement('div');
+        optionsDiv.className = 'options';
 
         const multiple = item.answer.length > 1;
 
         item.options.forEach((opt, i) => {
+          const checked = userAnswers[qIndex]?.includes(i) ? 'checked' : '';
           optionsDiv.innerHTML += `
             <label>
-              <input type="${multiple ? 'checkbox' : 'radio'}" name="q${index}" value="${i}" /> ${opt}
-            </label>
-          `;
+              <input type="${multiple ? 'checkbox' : 'radio'}" name="q${qIndex}" value="${i}" ${checked}/> ${opt}
+            </label>`;
         });
 
         qDiv.appendChild(optionsDiv);
         quizDiv.appendChild(qDiv);
       });
+
+      updateProgress();
     }
 
-    function submitQuiz() {
-      let score = 0;
+    function updateProgress() {
+      const answered = Object.keys(userAnswers).length;
+      document.getElementById('progress').value = answered;
+      document.getElementById('progressText').textContent = `${answered} / ${questions.length} answered`;
+    }
 
-      questions.forEach((item, index) => {
-        const inputs = document.querySelectorAll(`input[name=\"q${index}\"]:checked`);
-        const selected = Array.from(inputs).map(i => parseInt(i.value));
-        const qDiv = quizDiv.children[index + 1];
-
-        const feedback = document.createElement('div');
-
-        const correct = JSON.stringify(selected.sort()) === JSON.stringify(item.answer.sort());
-
-        if (correct) {
-          score++;
-          feedback.innerHTML = `✔ Correct — <a href="${item.ref}" target="_blank">Reference</a>`;
-          feedback.className = 'correct';
-        } else {
-          const answersText = item.answer.map(i => item.options[i]).join(', ');
-          feedback.innerHTML = `✖ Incorrect — Correct answer: <strong>${answersText}</strong><br/><a href="${item.ref}" target="_blank">Learn more</a>`;
-          feedback.className = 'incorrect';
+    function saveAnswers() {
+      questions.forEach((_, i) => {
+        const inputs = document.querySelectorAll(`input[name=\"q${i}\"]:checked`);
+        if (inputs.length > 0) {
+          userAnswers[i] = Array.from(inputs).map(inp => parseInt(inp.value));
         }
-
-        qDiv.appendChild(feedback);
       });
-
-      scoreDiv.textContent = `Score: ${score} / ${questions.length}`;
     }
 
-    function loadNewSet() {
-      currentSetIndex = Math.floor(Math.random() * quizSets.length);
+    function nextPage() {
+      saveAnswers();
+      if ((currentPage + 1) * QUESTIONS_PER_PAGE < questions.length) {
+        currentPage++;
+        renderQuiz();
+      }
+    }
+
+    function prevPage() {
+      saveAnswers();
+      if (currentPage > 0) {
+        currentPage--;
+        renderQuiz();
+      }
+    }
+
+    function changeSet() {
+      currentSetIndex = parseInt(setSelect.value);
       questions = quizSets[currentSetIndex].questions;
-      scoreDiv.textContent = "";
+      currentPage = 0;
+      userAnswers = {};
+      scoreDiv.textContent = '';
       renderQuiz();
+    }
+
+    renderQuiz();
     }
 
     renderQuiz();
