@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 3</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#dc2626; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 3</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 3) covering all major topics. Educational use only.</p>
+
+  <div id="quiz"></div>
+
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+
+<script>
+// =========================
+// SET 3 – 75 QUESTIONS
+// =========================
+const questions = [
+  // Agent & Installation (1-15)
+  {q:"Where does the Datadog Agent store logs on Linux?",options:["/tmp/datadog","/var/log/datadog","/opt/datadog/logs","/usr/local/datadog"],a:1,ref:"https://docs.datadoghq.com/agent/troubleshooting/"},
+  {q:"Which file contains integration-specific configurations?",options:["datadog.yaml","conf.d/*.yaml","integrations.yaml","checks/*.yaml"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/"},
+  {q:"What is the Agent check interval by default?",options:["10 seconds","15 seconds","30 seconds","60 seconds"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/agent-commands/"},
+  {q:"Which command restarts the Agent on systemd?",options:["agent restart","systemctl restart datadog-agent","service datadog restart","datadog-agent restart"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/agent-commands/"},
+  {q:"What permission level does the Agent require?",options:["Root only","Standard user","No permissions","Read-only"],a:1,ref:"https://docs.datadoghq.com/agent/"},
+  
+  {q:"Which integration requires AWS IAM permissions?",options:["Docker","Kubernetes","CloudWatch","NGINX"],a:2,ref:"https://docs.datadoghq.com/integrations/amazon_web_services/"},
+  {q:"What is the Agent flare command used for?",options:["Restart Agent","Send diagnostics to support","Update Agent","Check status"],a:1,ref:"https://docs.datadoghq.com/agent/troubleshooting/send_a_flare/"},
+  {q:"Which protocol does the Agent use to send data?",options:["HTTP","HTTPS","FTP","SSH"],a:1,ref:"https://docs.datadoghq.com/agent/"},
+  {q:"What is the minimum supported Python version for Agent checks?",options:["Python 2.7","Python 3.6","Python 3.8","Python 3.10"],a:2,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"Which environment variable sets the API key?",options:["DATADOG_KEY","DD_API_KEY","API_KEY","DATADOG_API"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/"},
+  
+  {q:"What does the Agent's dogstatsd_stats setting do?",options:["Disable DogStatsD","Enable DogStatsD metrics","Set port","Configure buffer"],a:1,ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  {q:"Which Agent component handles system metrics?",options:["Core check","Integration check","Custom check","External check"],a:0,ref:"https://docs.datadoghq.com/agent/"},
+  {q:"What is the purpose of Agent proxy configuration?",options:["Speed up data","Route through proxy server","Encrypt data","Compress data"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/proxy/"},
+  {q:"Which file format does the Agent use for checks?",options:["JSON","YAML","XML","TOML"],a:1,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"What happens when the Agent's buffer is full?",options:["Data is dropped","Agent crashes","Data is compressed","Oldest data discarded"],a:3,ref:"https://docs.datadoghq.com/agent/troubleshooting/"},
+  
+  // Metrics (16-30)
+  {q:"What is metric resolution in Datadog?",options:["Data accuracy","Time granularity","Tag count","Host count"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which metric type is best for queue size?",options:["Count","Rate","Gauge","Histogram"],a:2,ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"What does monotonic count mean?",options:["Always decreasing","Always increasing","Can fluctuate","Always zero"],a:1,ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"Which aggregation preserves peaks?",options:["avg","max","sum","min"],a:1,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"What is metric interpolation?",options:["Deleting metrics","Filling missing data points","Rounding values","Changing units"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
+  
+  {q:"How long does Datadog retain metrics by default?",options:["7 days","15 months","1 year","Forever"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is a distribution metric advantage?",options:["Lower cost","Percentile calculations across tags","Faster queries","Less storage"],a:1,ref:"https://docs.datadoghq.com/metrics/types/?tab=distribution"},
+  {q:"Which function calculates change between points?",options:["diff","delta","rate","change"],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"What does the .as_count() function do?",options:["Convert to rate","Convert to gauge","Sum values","Show total count"],a:3,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"Which metric type supports client-side aggregation?",options:["Gauge","Count","Histogram","Rate"],a:2,ref:"https://docs.datadoghq.com/metrics/types/?tab=histogram"},
+  
+  {q:"What is the metric naming convention?",options:["camelCase","snake_case","PascalCase","kebab-case"],a:1,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"Which symbol separates metric namespace?",options:[":",".","_","-"],a:1,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"What is sketch-based metric?",options:["Manual metric","Distribution metric","Custom metric","Integration metric"],a:1,ref:"https://docs.datadoghq.com/metrics/types/?tab=distribution"},
+  {q:"Which query shows rate per second?",options:[".as_rate()","per_second()","rate()","to_rate()"],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"What does metric metadata provide?",options:["Data values","Description and unit","Tags","Aggregation"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
+  
+  // Tags & Organization (31-45)
+  {q:"What is the maximum tag length?",options:["50 characters","100 characters","200 characters","500 characters"],a:2,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"Which tag is automatically added by the Agent?",options:["env","service","host","version"],a:2,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"What are reserved tags?",options:["User-defined tags","Special meaning tags","Deprecated tags","Internal tags"],a:1,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"Which is a valid tag key?",options:["my-tag","my_tag","my:tag","All of above"],a:3,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"What is tag inheritance?",options:["Copying tags","Child resources get parent tags","Deleting tags","Renaming tags"],a:1,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  
+  {q:"Which file sets host tags?",options:["tags.yaml","datadog.yaml","host.yaml","config.yaml"],a:1,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"What is the service tag used for?",options:["Billing","Unified service tagging","Host grouping","Alerts"],a:1,ref:"https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/"},
+  {q:"Which tag format is for key with no value?",options:["key:","key","key:null","key:empty"],a:1,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"What is tag normalization?",options:["Deleting tags","Converting to standard format","Adding tags","Counting tags"],a:1,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"Which character is NOT allowed in tags?",options:["_",":",",","-"],a:2,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  
+  {q:"What are service-level tags?",options:["Host tags","Tags for APM services","Log tags","Metric tags"],a:1,ref:"https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/"},
+  {q:"Which tag links traces to logs?",options:["trace_id","dd.trace_id","span_id","correlation_id"],a:1,ref:"https://docs.datadoghq.com/tracing/other_telemetry/connect_logs_and_traces/"},
+  {q:"What is a tag group?",options:["Collection of tags","Tag namespace","Tag category","Tag filter"],a:0,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"Which unified tag is required for APM?",options:["env","service","version","All of above"],a:3,ref:"https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/"},
+  {q:"What is tag explosion?",options:["Too many unique tags","Tag deletion","Tag duplication","Tag error"],a:0,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  
+  // Dashboards & Visualization (46-60)
+  {q:"Which dashboard type is editable by anyone?",options:["Standard","Shared","Public","Custom"],a:0,ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"What is a template variable?",options:["Fixed value","Dynamic dashboard filter","Widget type","API parameter"],a:1,ref:"https://docs.datadoghq.com/dashboards/template_variables/"},
+  {q:"Which widget shows single number?",options:["Timeseries","Query value","Table","Heatmap"],a:1,ref:"https://docs.datadoghq.com/dashboards/widgets/query_value/"},
+  {q:"What is dashboard JSON used for?",options:["Data storage","Dashboard as code","API calls","Exports only"],a:1,ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"Which widget displays geographic data?",options:["Geomap","World map","Host map","Network map"],a:0,ref:"https://docs.datadoghq.com/dashboards/widgets/geomap/"},
+  
+  {q:"What does the overlay feature do?",options:["Hide widgets","Add reference lines","Duplicate dashboard","Export data"],a:1,ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"Which format exports dashboards?",options:["PDF","JSON","CSV","XML"],a:1,ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"What is a dashboard group?",options:["Widget collection","Multiple dashboards","Tag filter","Team permission"],a:1,ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"Which widget shows data distribution?",options:["Timeseries","Heatmap","Table","Toplist"],a:1,ref:"https://docs.datadoghq.com/dashboards/widgets/heatmap/"},
+  {q:"What is conditional formatting?",options:["Color based on value","Font changes","Widget size","Data filtering"],a:0,ref:"https://docs.datadoghq.com/dashboards/widgets/table/"},
+  
+  {q:"Which dashboard type is read-only for most users?",options:["Standard","Shared","Screenboard","Read-only"],a:3,ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"What is widget grouping?",options:["Combine data","Visual organization","Tag filter","API endpoint"],a:1,ref:"https://docs.datadoghq.com/dashboards/widgets/group/"},
+  {q:"Which widget displays SLOs?",options:["SLO widget","Query value","Timeseries","SLO summary"],a:3,ref:"https://docs.datadoghq.com/dashboards/widgets/slo/"},
+  {q:"What is dashboard cloning?",options:["Copy dashboard","Delete dashboard","Share dashboard","Export dashboard"],a:0,ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"Which widget shows logs?",options:["Log stream","Timeseries","Table","Query value"],a:0,ref:"https://docs.datadoghq.com/dashboards/widgets/log_stream/"},
+  
+  // Monitors & Alerts (61-75)
+  {q:"What is monitor renotification?",options:["Initial alert","Repeated alerts","Alert recovery","Alert mute"],a:1,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which monitor type tracks processes?",options:["Metric","Log","Process","APM"],a:2,ref:"https://docs.datadoghq.com/monitors/types/process/"},
+  {q:"What is monitor priority?",options:["Alert severity level","Processing order","Team assignment","Cost tier"],a:0,ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"Which notification variable shows query?",options:["{{query}}","{{value}}","{{metric}}","{{condition}}"],a:0,ref:"https://docs.datadoghq.com/monitors/notify/variables/"},
+  {q:"What is monitor recovery notification?",options:["Initial alert","Alert when OK","Alert update","Alert deletion"],a:1,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  
+  {q:"Which monitor option prevents alert storms?",options:["Mute","Rate limiting","Grouping","Aggregation"],a:1,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"What is alert evaluation delay?",options:["Time before alert","Time after alert","Alert frequency","Alert timeout"],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which state shows degraded?",options:["OK","Alert","Warn","No Data"],a:2,ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"What is monitor tagging used for?",options:["Data filtering","Organization and search","Alert routing","Cost allocation"],a:1,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which monitor requires no data handling?",options:["Metric","Log","Anomaly","All monitors"],a:3,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  
+  {q:"What is monitor scheduling?",options:["When to check","When to alert","Alert frequency","Downtime"],a:1,ref:"https://docs.datadoghq.com/monitors/downtimes/"},
+  {q:"Which variable shows host in alert?",options:["{{host}}","{{host.name}}","{{hostname}}","{{host_name}}"],a:1,ref:"https://docs.datadoghq.com/monitors/notify/variables/"},
+  {q:"What is a silenced alert?",options:["Deleted","Muted temporarily","Disabled","Acknowledged"],a:1,ref:"https://docs.datadoghq.com/monitors/downtimes/"},
+  {q:"Which channel supports @mentions?",options:["Email only","Slack","PagerDuty","All channels"],a:3,ref:"https://docs.datadoghq.com/monitors/notify/"},
+  {q:"What is monitor export format?",options:["PDF","JSON","CSV","YAML"],a:1,ref:"https://docs.datadoghq.com/monitors/manage/"}
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 3 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  
+  alert(message);
+  window.scrollTo(0, 0);
+}
+
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+
+render();
+</script>
+</body>
+</html>

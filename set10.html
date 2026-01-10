@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 10</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#14b8a6; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 10</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 10) covering all major topics. Educational use only.</p>
+  <div id="quiz"></div>
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+<script>
+const questions = [
+  {q:"What is log facet?",options:['Indexed attribute', 'Tag', 'Metric', 'Trace'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/facets/"},
+  {q:"Which facet is default?",options:['status', 'host', 'service', 'source'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is log measure?",options:['Numeric facet', 'String', 'Boolean', 'Object'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/facets/"},
+  {q:"Which operation on measure?",options:['Aggregation', 'String ops', 'Boolean', 'None'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/facets/"},
+  {q:"What is log status?",options:['Severity level', 'Message', 'Host', 'Service'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which status is highest?",options:['emergency', 'alert', 'critical', 'error'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is log message?",options:['Main content', 'Tag', 'Attribute', 'Status'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which field is full-text?",options:['message', 'All', 'None', 'Some'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is log timestamp?",options:['Event time', 'Ingestion time', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which timestamp is primary?",options:['Event', 'Ingestion', 'Current', 'None'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is log source?",options:['Origin', 'Destination', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which source type?",options:['nginx', 'python', 'postgres', 'All of these'],a:3,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is log service?",options:['Application name', 'Host', 'Tag', 'Status'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which links APM to logs?",options:['service', 'trace_id', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/tracing/other_telemetry/connect_logs_and_traces/"},
+  {q:"What is log parsing rule?",options:['Extract data', 'Delete', 'Forward', 'Archive'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/parsing/"},
+  {q:"Which language for rules?",options:['Grok', 'Regex', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/parsing/"},
+  {q:"What is grok pattern?",options:['Regex shorthand', 'Full regex', 'String', 'Number'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/parsing/"},
+  {q:"Which pattern for IP?",options:['%{IP}', '%{IPV4}', '%{IPV6}', 'All of these'],a:3,ref:"https://docs.datadoghq.com/logs/log_configuration/parsing/"},
+  {q:"What is log processor?",options:['Transform logs', 'Delete', 'Forward', 'Archive'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"Which processor exists?",options:['Grok parser', 'Remapper', 'Arithmetic', 'All of these'],a:3,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is remapper processor?",options:['Change attribute name', 'Delete', 'Copy', 'Move'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"Which remapper type?",options:['Standard', 'Service', 'Status', 'All of these'],a:3,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is category processor?",options:['Add category attribute', 'Delete', 'Filter', 'Search'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"Which basis for category?",options:['Query', 'Tag', 'Host', 'Service'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is arithmetic processor?",options:['Calculate values', 'Add', 'Subtract', 'Delete'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"Which operation supported?",options:['Add', 'Multiply', 'Divide', 'All of these'],a:3,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is string builder?",options:['Combine attributes', 'Split', 'Delete', 'Copy'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"Which template syntax?",options:['%{attribute}', '{{attribute}}', '${attribute}', 'All'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is lookup processor?",options:['Enrich from table', 'Delete', 'Filter', 'Forward'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"Which source for lookup?",options:['CSV', 'Database', 'API', 'CSV only'],a:3,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is GeoIP processor?",options:['Add location', 'Delete', 'Filter', 'Forward'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"Which attribute for GeoIP?",options:['IP address', 'City', 'Country', 'All'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is log pipeline order?",options:['Sequential', 'Parallel', 'Random', 'No order'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
+  {q:"Which executes first?",options:['Top pipeline', 'Bottom', 'Random', 'All'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
+  {q:"What is pipeline filter?",options:['Apply to subset', 'All logs', 'No filter', 'Random'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
+  {q:"Which basis for filter?",options:['Query', 'Tag', 'Host', 'Service'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
+  {q:"What is nested pipeline?",options:['Pipeline in pipeline', 'Separate', 'Parallel', 'None'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
+  {q:"Which allows nesting?",options:['All pipelines', 'Some', 'None', 'Custom'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
+  {q:"What is log archive?",options:['Long-term storage', 'Short-term', 'No storage', 'Temporary'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/archives/"},
+  {q:"Which destination for archive?",options:['S3', 'GCS', 'Azure', 'All of these'],a:3,ref:"https://docs.datadoghq.com/logs/log_configuration/archives/"},
+  {q:"What is archive format?",options:['Compressed JSON', 'Raw', 'XML', 'Binary'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/archives/"},
+  {q:"Which compression for archive?",options:['gzip', 'zip', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/archives/"},
+  {q:"What is log rehydration?",options:['Restore from archive', 'Delete', 'Forward', 'Compress'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/rehydrating/"},
+  {q:"Which index for rehydrated?",options:['New index', 'Original', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/rehydrating/"},
+  {q:"What is log exclusion?",options:["Don't index", 'Delete', 'Forward', 'Archive'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/indexes/"},
+  {q:"Which remains despite exclusion?",options:['Archive', 'Nothing', 'Both', 'Metrics'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/indexes/"},
+  {q:"What is log sampling?",options:['Index subset', 'All', 'None', 'Random'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/"},
+  {q:"Which rate for sampling?",options:['Percentage', 'All', 'None', 'Random'],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/"},
+  {q:"What is log index?",options:['Storage bucket', 'Tag', 'Attribute', 'Status'],a:0,ref:"https://docs.datadoghq.com/logs/indexes/"},
+  {q:"Which index property?",options:['Retention', 'Size', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/logs/indexes/"},
+  {q:"What is log retention?",options:['Storage duration', 'Forever', 'No storage', 'Random'],a:0,ref:"https://docs.datadoghq.com/logs/indexes/"},
+  {q:"Which max retention?",options:['15 days', '30 days', '90 days', 'Custom'],a:3,ref:"https://docs.datadoghq.com/logs/indexes/"},
+  {q:"What is daily quota?",options:['Index limit', 'No limit', 'Unlimited', 'Random'],a:0,ref:"https://docs.datadoghq.com/logs/indexes/"},
+  {q:"Which happens when quota met?",options:['Stop indexing', 'Continue', 'Delete old', 'Random'],a:0,ref:"https://docs.datadoghq.com/logs/indexes/"},
+  {q:"What is log metric?",options:['Metric from logs', 'Log count', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/logs_to_metrics/"},
+  {q:"Which type of log metric?",options:['Count', 'Distribution', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/logs/logs_to_metrics/"},
+  {q:"What is count metric?",options:['Number of logs', 'Size', 'Duration', 'All'],a:0,ref:"https://docs.datadoghq.com/logs/logs_to_metrics/"},
+  {q:"Which filter for count?",options:['Query', 'Tag', 'Host', 'Service'],a:0,ref:"https://docs.datadoghq.com/logs/logs_to_metrics/"},
+  {q:"What is distribution metric?",options:['Measure values', 'Count', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/logs_to_metrics/"},
+  {q:"Which attribute for distribution?",options:['Numeric', 'String', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/logs_to_metrics/"},
+  {q:"What is log pattern?",options:['Auto-grouped logs', 'Manual', 'Random', 'None'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/"},
+  {q:"Which creates patterns?",options:['ML algorithm', 'Manual', 'Query', 'Tag'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/"},
+  {q:"What is pattern aggregation?",options:['Group similar', 'Separate', 'Delete', 'Forward'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/"},
+  {q:"Which basis for patterns?",options:['Message', 'Tag', 'Host', 'Service'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/"},
+  {q:"What is log transaction?",options:['Related logs', 'Single log', 'Random', 'All'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which groups transactions?",options:['Query', 'Manual', 'Auto', 'Tag'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is live tail?",options:['Real-time stream', 'Historical', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/live_tail/"},
+  {q:"Which mode for live tail?",options:['Paused', 'Running', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/logs/explorer/live_tail/"},
+  {q:"What is log analytics?",options:['Aggregate logs', 'View', 'Search', 'Delete'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/"},
+  {q:"Which visualization type?",options:['Timeseries', 'Table', 'Toplist', 'All of these'],a:3,ref:"https://docs.datadoghq.com/logs/explorer/"},
+  {q:"What is log query?",options:['Search syntax', 'View', 'Filter', 'Delete'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/search/"},
+  {q:"Which operator for AND?",options:['AND', '&&', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/search/"},
+  {q:"What is wildcard search?",options:['*', '?', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/logs/explorer/search/"},
+  {q:"Which for zero or more chars?",options:['*', '?', '+', '#'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/search/"},
+  {q:"What is saved view?",options:['Stored query', 'Temporary', 'Random', 'None'],a:0,ref:"https://docs.datadoghq.com/logs/explorer/"},
+  {q:"Which saves in view?",options:['Query', 'Time range', 'Visualization', 'All of these'],a:3,ref:"https://docs.datadoghq.com/logs/explorer/"},
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 10 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  alert(message);
+  window.scrollTo(0, 0);
+}
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+render();
+</script>
+</body>
+</html>

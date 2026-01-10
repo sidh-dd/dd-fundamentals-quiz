@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 6</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#3b82f6; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 6</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 6) covering all major topics. Educational use only.</p>
+  <div id="quiz"></div>
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+<script>
+const questions = [
+  {q:"What is event correlation?",options:['Link related events', 'Manual tagging', 'Event deletion', 'Event archive'],a:0,ref:"https://docs.datadoghq.com/events/"},
+  {q:"Which format exports events?",options:['PDF', 'JSON', 'CSV', 'XML'],a:1,ref:"https://docs.datadoghq.com/events/"},
+  {q:"What is event aggregation?",options:['Group similar events', 'Delete events', 'Forward events', 'Archive events'],a:0,ref:"https://docs.datadoghq.com/events/"},
+  {q:"Which priority levels exist?",options:['Low-High', 'Normal-Low', 'P1-P5', 'Custom'],a:0,ref:"https://docs.datadoghq.com/events/"},
+  {q:"What is notebook collaboration?",options:['Solo editing', 'Multi-user editing', 'Read-only', 'Admin only'],a:1,ref:"https://docs.datadoghq.com/notebooks/"},
+  {q:"Which cell type exists in notebooks?",options:['Markdown', 'Query', 'Graph', 'All of these'],a:3,ref:"https://docs.datadoghq.com/notebooks/"},
+  {q:"What is team permission?",options:['User role', 'Group access control', 'Tag filter', 'Dashboard access'],a:1,ref:"https://docs.datadoghq.com/account_management/teams/"},
+  {q:"Which access level exists?",options:['Read', 'Write', 'Admin', 'All of these'],a:3,ref:"https://docs.datadoghq.com/account_management/rbac/"},
+  {q:"What is API rate limit?",options:['Requests per hour', 'No limit', 'Per day', 'Per minute'],a:0,ref:"https://docs.datadoghq.com/api/latest/rate-limits/"},
+  {q:"Which authentication method?",options:['API key', 'OAuth', 'SAML', 'All of these'],a:3,ref:"https://docs.datadoghq.com/account_management/"},
+  {q:"What is audit trail?",options:['Error log', 'Account activity log', 'Metric log', 'Trace log'],a:1,ref:"https://docs.datadoghq.com/account_management/audit_trail/"},
+  {q:"Which event is audited?",options:['User login', 'Config change', 'API call', 'All of these'],a:3,ref:"https://docs.datadoghq.com/account_management/audit_trail/"},
+  {q:"What is IP allowlist?",options:['Block IPs', 'Allow specific IPs', 'No restriction', 'Geo-blocking'],a:1,ref:"https://docs.datadoghq.com/account_management/org_settings/"},
+  {q:"Which SSO protocol?",options:['OAuth', 'SAML', 'LDAP', 'OpenID'],a:1,ref:"https://docs.datadoghq.com/account_management/saml/"},
+  {q:"What is service account?",options:['User account', 'API-only account', 'Admin account', 'Guest account'],a:1,ref:"https://docs.datadoghq.com/account_management/org_settings/service_accounts/"},
+  {q:"Which key type for automation?",options:['API key', 'App key', 'Service key', 'All of these'],a:0,ref:"https://docs.datadoghq.com/account_management/api-app-keys/"},
+  {q:"What is key rotation?",options:['Change keys regularly', 'Delete keys', 'Share keys', 'Backup keys'],a:0,ref:"https://docs.datadoghq.com/account_management/api-app-keys/"},
+  {q:"Which scope limits key?",options:['Time-based', 'Resource-based', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/account_management/api-app-keys/"},
+  {q:"What is org switcher?",options:['Change account', 'Switch dashboard', 'Change user', 'Switch region'],a:0,ref:"https://docs.datadoghq.com/account_management/multi_organization/"},
+  {q:"Which org type exists?",options:['Parent', 'Child', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/account_management/multi_organization/"},
+  {q:"What is cross-org visibility?",options:['Share data', 'No sharing', 'Full access', 'Read-only'],a:0,ref:"https://docs.datadoghq.com/account_management/multi_organization/"},
+  {q:"Which data can be shared?",options:['Dashboards', 'Monitors', 'SLOs', 'All of these'],a:3,ref:"https://docs.datadoghq.com/account_management/multi_organization/"},
+  {q:"What is usage attribution?",options:['Cost tracking', 'Performance', 'Availability', 'Security'],a:0,ref:"https://docs.datadoghq.com/account_management/billing/usage_attribution/"},
+  {q:"Which tag attributes usage?",options:['Any tag', 'Cost tags', 'Custom tags', 'No tags'],a:0,ref:"https://docs.datadoghq.com/account_management/billing/usage_attribution/"},
+  {q:"What is estimated usage?",options:['Real-time cost', 'Projected cost', 'Past cost', 'No cost'],a:1,ref:"https://docs.datadoghq.com/account_management/billing/usage_metrics/"},
+  {q:"Which view shows costs?",options:['Usage', 'Billing', 'Plan', 'All of these'],a:3,ref:"https://docs.datadoghq.com/account_management/billing/"},
+  {q:"What is commitment?",options:['Contract term', 'No commitment', 'Pay-as-you-go', 'Trial'],a:0,ref:"https://docs.datadoghq.com/account_management/billing/"},
+  {q:"Which metric is billable?",options:['Custom metric', 'Host', 'Container', 'All of these'],a:3,ref:"https://docs.datadoghq.com/account_management/billing/"},
+  {q:"What is on-demand?",options:['No contract', 'Annual only', 'Monthly only', 'Custom'],a:0,ref:"https://docs.datadoghq.com/account_management/billing/"},
+  {q:"Which plan tier exists?",options:['Free', 'Pro', 'Enterprise', 'All of these'],a:3,ref:"https://docs.datadoghq.com/account_management/billing/"},
+  {q:"What is metric cardinality limit?",options:['No limit', 'Per plan', 'Per org', 'Per user'],a:1,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"Which storage class for logs?",options:['Hot', 'Cold', 'Archive', 'All of these'],a:3,ref:"https://docs.datadoghq.com/logs/log_configuration/indexes/"},
+  {q:"What is log rehydration cost?",options:['Free', 'Per GB', 'Per hour', 'Per query'],a:1,ref:"https://docs.datadoghq.com/logs/log_configuration/rehydrating/"},
+  {q:"Which retention affects cost?",options:['Longer=More', 'Shorter=More', 'No impact', 'Same cost'],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is span ingestion?",options:['Free', 'Billable', 'Unlimited', 'No charge'],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which traces are indexed?",options:['All', 'Sample', 'None', 'Random'],a:1,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/trace_retention/"},
+  {q:"What is synthetics cost?",options:['Per test run', 'Unlimited', 'Free', 'Per month'],a:0,ref:"https://docs.datadoghq.com/synthetics/"},
+  {q:"Which test type costs more?",options:['Browser', 'API', 'Same', 'Neither'],a:0,ref:"https://docs.datadoghq.com/synthetics/"},
+  {q:"What is RUM session?",options:['Page view', 'User session', 'Click', 'All views'],a:1,ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+  {q:"Which session is billable?",options:['With replay', 'Without replay', 'All', 'None'],a:0,ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+  {q:"What is profiling overhead?",options:['High', 'Medium', 'Low', 'None'],a:2,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"Which data profiler collects?",options:['CPU', 'Memory', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"What is security signal?",options:['Alert', 'Detection event', 'Error', 'Log'],a:1,ref:"https://docs.datadoghq.com/security/"},
+  {q:"Which signal is billable?",options:['All', 'None', 'Critical only', 'Some'],a:0,ref:"https://docs.datadoghq.com/security/"},
+  {q:"What is DBM query sample?",options:['Example query', 'All queries', 'Slow queries', 'Fast queries'],a:0,ref:"https://docs.datadoghq.com/database_monitoring/"},
+  {q:"Which DB plan exists?",options:['Standard', 'Enterprise', 'Both', 'Free'],a:2,ref:"https://docs.datadoghq.com/database_monitoring/"},
+  {q:"What is CI pipeline?",options:['Build process', 'Test process', 'Deploy process', 'All of these'],a:3,ref:"https://docs.datadoghq.com/continuous_integration/"},
+  {q:"Which CI metric is tracked?",options:['Duration', 'Pass rate', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/continuous_integration/"},
+  {q:"What is test session?",options:['Single test', 'Test suite run', 'Test file', 'Test class'],a:1,ref:"https://docs.datadoghq.com/continuous_integration/tests/"},
+  {q:"Which test framework is supported?",options:['JUnit', 'pytest', 'Jest', 'All of these'],a:3,ref:"https://docs.datadoghq.com/continuous_integration/tests/"},
+  {q:"What is error tracking?",options:['Find bugs', 'Log errors', 'Track exceptions', 'All of these'],a:3,ref:"https://docs.datadoghq.com/tracing/error_tracking/"},
+  {q:"Which source has errors?",options:['Logs', 'APM', 'RUM', 'All of these'],a:3,ref:"https://docs.datadoghq.com/tracing/error_tracking/"},
+  {q:"What is error fingerprint?",options:['Unique ID', 'Hash', 'Pattern', 'Stack trace'],a:0,ref:"https://docs.datadoghq.com/tracing/error_tracking/"},
+  {q:"Which view groups errors?",options:['Issues', 'Errors', 'Logs', 'Traces'],a:0,ref:"https://docs.datadoghq.com/tracing/error_tracking/"},
+  {q:"What is watchdog?",options:['ML detection', 'Manual review', 'Auto-fix', 'Scheduler'],a:0,ref:"https://docs.datadoghq.com/watchdog/"},
+  {q:"Which anomaly Watchdog finds?",options:['Metric', 'Log', 'APM', 'All of these'],a:3,ref:"https://docs.datadoghq.com/watchdog/"},
+  {q:"What is Watchdog alert?",options:['Manual', 'Automatic', 'Scheduled', 'Never'],a:1,ref:"https://docs.datadoghq.com/watchdog/"},
+  {q:"Which ML algorithm used?",options:['Random Forest', 'Neural Net', 'Proprietary', 'All'],a:2,ref:"https://docs.datadoghq.com/watchdog/"},
+  {q:"What is cost recommendation?",options:['Optimize spend', 'Increase cost', 'No advice', 'Manual'],a:0,ref:"https://docs.datadoghq.com/infrastructure/resource_catalog/"},
+  {q:"Which resource is analyzed?",options:['AWS only', 'Azure only', 'All clouds', 'On-prem'],a:2,ref:"https://docs.datadoghq.com/infrastructure/resource_catalog/"},
+  {q:"What is resource catalog?",options:['Asset inventory', 'Cost center', 'Performance', 'Security'],a:0,ref:"https://docs.datadoghq.com/infrastructure/resource_catalog/"},
+  {q:"Which attribute is tracked?",options:['Owner', 'Cost', 'Tags', 'All of these'],a:3,ref:"https://docs.datadoghq.com/infrastructure/resource_catalog/"},
+  {q:"What is cloud cost?",options:['Bill analysis', 'Infrastructure only', 'Services only', 'All costs'],a:3,ref:"https://docs.datadoghq.com/cloud_cost_management/"},
+  {q:"Which cloud is supported?",options:['AWS', 'Azure', 'GCP', 'All of these'],a:3,ref:"https://docs.datadoghq.com/cloud_cost_management/"},
+  {q:"What is cost allocation?",options:['Tag-based', 'User-based', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/cloud_cost_management/"},
+  {q:"Which metric shows waste?",options:['Idle resource', 'All resources', 'Active only', 'Busy only'],a:0,ref:"https://docs.datadoghq.com/cloud_cost_management/"},
+  {q:"What is terraform integration?",options:['IAC monitoring', 'Cost tracking', 'Resource graph', 'All of these'],a:0,ref:"https://docs.datadoghq.com/integrations/terraform/"},
+  {q:"Which terraform version?",options:['0.12+', '1.0+', 'Any', 'Latest only'],a:0,ref:"https://docs.datadoghq.com/integrations/terraform/"},
+  {q:"What is kubernetes operator?",options:['Deployment tool', 'Monitor K8s', 'Manage pods', 'All of these'],a:1,ref:"https://docs.datadoghq.com/containers/kubernetes/operator/"},
+  {q:"Which resource operator manages?",options:['Agent', 'Cluster agent', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/containers/kubernetes/operator/"},
+  {q:"What is helm chart?",options:['Package manager', 'K8s deployment', 'Container', 'Service'],a:1,ref:"https://docs.datadoghq.com/containers/kubernetes/installation/"},
+  {q:"Which values are customizable?",options:['All', 'None', 'Some', 'Default'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/installation/"},
+  {q:"What is container image?",options:['Docker image', 'Datadog Agent image', 'App image', 'Base image'],a:1,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"Which registry is official?",options:['Docker Hub', 'GCR', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"What is image tag?",options:['Version', 'Label', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/containers/"},
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 6 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  alert(message);
+  window.scrollTo(0, 0);
+}
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+render();
+</script>
+</body>
+</html>

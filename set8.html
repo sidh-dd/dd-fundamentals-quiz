@@ -1,0 +1,188 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 8</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#ec4899; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 8</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 8) covering all major topics. Educational use only.</p>
+  <div id="quiz"></div>
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+<script>
+const questions = [
+  {q:"What is metric aggregation?",options:['Combine values', 'Delete', 'Forward', 'Archive'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which aggregator is spatial?",options:['avg', 'sum', 'min', 'All of these'],a:3,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is temporal rollup?",options:['Time-based aggregation', 'Space-based', 'Tag-based', 'Host-based'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which function for rollup?",options:['avg', 'sum', 'count', 'All of these'],a:3,ref:"https://docs.datadoghq.com/dashboards/functions/rollup/"},
+  {q:"What is interpolation?",options:['Fill gaps', 'Delete data', 'Compress', 'Archive'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which method for interpolation?",options:['Linear', 'None', 'Both', 'Cubic'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is metric arithmetic?",options:['Math operations', 'Addition only', 'No math', 'Custom'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/arithmetic/"},
+  {q:"Which operator exists?",options:['+', '-', '*', 'All of these'],a:3,ref:"https://docs.datadoghq.com/dashboards/functions/arithmetic/"},
+  {q:"What is metric smoothing?",options:['Reduce noise', 'Increase', 'No change', 'Random'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/smoothing/"},
+  {q:"Which algorithm for smoothing?",options:['Moving average', 'Median', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/smoothing/"},
+  {q:"What is percentile?",options:['Statistical value', 'Average', 'Total', 'Count'],a:0,ref:"https://docs.datadoghq.com/metrics/distributions/"},
+  {q:"Which percentile is common?",options:['p50', 'p95', 'p99', 'All of these'],a:3,ref:"https://docs.datadoghq.com/metrics/distributions/"},
+  {q:"What is metric exclusion?",options:['Filter out data', 'Include all', 'Delete', 'Archive'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which query for exclusion?",options:['.exclude()', ' .remove()', ' .filter()', ' .delete()'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is metric ranking?",options:['Top N', 'Bottom N', 'Both', 'All'],a:2,ref:"https://docs.datadoghq.com/dashboards/functions/rank/"},
+  {q:"Which function ranks?",options:['top()', 'rank()', 'sort()', 'order()'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/rank/"},
+  {q:"What is metric fill?",options:['Default value for gaps', 'Delete', 'Compress', 'Forward'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which fill method exists?",options:['null', 'zero', 'last', 'All of these'],a:3,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is metric forecast?",options:['Predict future', 'Past data', 'Current', 'Random'],a:0,ref:"https://docs.datadoghq.com/monitors/types/forecasts/"},
+  {q:"Which algorithm for forecast?",options:['Linear', 'Seasonal', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/monitors/types/forecasts/"},
+  {q:"What is change detection?",options:['Sudden shifts', 'Gradual', 'No change', 'Random'],a:0,ref:"https://docs.datadoghq.com/monitors/types/change/"},
+  {q:"Which comparison type?",options:['Point', 'Average', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/monitors/types/change/"},
+  {q:"What is rate calculation?",options:['Per second', 'Per minute', 'Per hour', 'Custom'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/rate/"},
+  {q:"Which metric for rate?",options:['Count', 'Gauge', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"What is metric derivation?",options:['Calculate change', 'Average', 'Sum', 'Count'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"Which shows velocity?",options:['derivative()', 'rate()', 'diff()', 'delta()'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"What is cumulative sum?",options:['Running total', 'Average', 'Rate', 'Count'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"Which function for cumsum?",options:['cumsum()', 'sum()', 'total()', 'running()'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"What is moving window?",options:['Time range', 'Fixed', 'Random', 'Single'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"Which function uses window?",options:['rollup()', 'window()', 'moving()', 'time()'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/rollup/"},
+  {q:"What is time shift?",options:['Compare periods', 'Delay', 'Speed up', 'Stop'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/timeshift/"},
+  {q:"Which syntax for shift?",options:['timeshift()', 'shift()', 'delay()', 'offset()'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/timeshift/"},
+  {q:"What is metric transformation?",options:['Change values', 'Delete', 'Forward', 'Archive'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"Which transform exists?",options:['log10()', 'sqrt()', 'abs()', 'All of these'],a:3,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"What is boolean logic?",options:['True/false ops', 'Math only', 'String', 'All'],a:0,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"Which operator for boolean?",options:['>', '<', '==', 'All of these'],a:3,ref:"https://docs.datadoghq.com/dashboards/functions/"},
+  {q:"What is metric aliasing?",options:['Rename metric', 'Delete', 'Copy', 'Move'],a:0,ref:"https://docs.datadoghq.com/dashboards/querying/"},
+  {q:"Which syntax for alias?",options:['.as()', '.name()', '.rename()', '.label()'],a:0,ref:"https://docs.datadoghq.com/dashboards/querying/"},
+  {q:"What is formula?",options:['Custom calculation', 'Query', 'Function', 'Filter'],a:0,ref:"https://docs.datadoghq.com/dashboards/querying/"},
+  {q:"Which variables in formula?",options:['a, b, c', 'x, y, z', '1, 2, 3', 'All queries'],a:0,ref:"https://docs.datadoghq.com/dashboards/querying/"},
+  {q:"What is query grouping?",options:['By tags', 'By host', 'By time', 'No grouping'],a:0,ref:"https://docs.datadoghq.com/dashboards/querying/"},
+  {q:"Which keyword groups?",options:['by', 'group', 'tag', 'with'],a:0,ref:"https://docs.datadoghq.com/dashboards/querying/"},
+  {q:"What is space aggregation?",options:['Across hosts', 'Over time', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which happens first?",options:['Space', 'Time', 'Same time', 'Random'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is time aggregation?",options:['Rollup', 'Grouping', 'Filtering', 'Ranking'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which granularity for time?",options:['Second', 'Minute', 'Hour', 'All of these'],a:3,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is metric units?",options:['Display format', 'Storage', 'Query', 'All'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which unit system?",options:['SI', 'Imperial', 'Binary', 'All of these'],a:3,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is unit conversion?",options:['Auto display', 'Manual', 'Both', 'None'],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which converts automatically?",options:['Bytes', 'Time', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is metric threshold?",options:['Static value', 'Dynamic', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"Which type for static?",options:['Constant', 'Fixed', 'Both', 'Variable'],a:0,ref:"https://docs.datadoghq.com/monitors/types/metric/"},
+  {q:"What is dynamic threshold?",options:['ML-based', 'Manual', 'Fixed', 'Random'],a:0,ref:"https://docs.datadoghq.com/monitors/types/anomaly/"},
+  {q:"Which learns behavior?",options:['Anomaly monitor', 'Metric', 'Forecast', 'Change'],a:0,ref:"https://docs.datadoghq.com/monitors/types/anomaly/"},
+  {q:"What is evaluation window?",options:['Time range', 'Query', 'Function', 'Filter'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which affects sensitivity?",options:['Window size', 'Tags', 'Hosts', 'All'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"What is alert recovery?",options:['Back to normal', 'Still alerting', 'No data', 'Error'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which condition for recovery?",options:['Below threshold', 'Above', 'Equal', 'All'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"What is alert delay?",options:['Wait before alert', 'Immediate', 'Random', 'Never'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which prevents flapping?",options:['Delay', 'Speed', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"What is no-data alert?",options:['Missing data', 'Zero data', 'Null', 'All'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which timeout for no-data?",options:['Minutes', 'Hours', 'Days', 'Seconds'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"What is alert grouping?",options:['By tag', 'By host', 'By service', 'All of these'],a:3,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which creates separate alerts?",options:['Each group', 'All groups', 'No groups', 'Random'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"What is simple alert?",options:['Single condition', 'Multiple', 'Complex', 'Composite'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which alert for one metric?",options:['Simple', 'Complex', 'Composite', 'Multi'],a:0,ref:"https://docs.datadoghq.com/monitors/types/metric/"},
+  {q:"What is multi-alert?",options:['Per group', 'Single', 'All hosts', 'Random'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"Which separates by tag?",options:['Multi-alert', 'Simple', 'Composite', 'Single'],a:0,ref:"https://docs.datadoghq.com/monitors/configuration/"},
+  {q:"What is alert priority?",options:['P1-P5', 'High-Low', '1-10', 'Custom'],a:0,ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"Which is most critical?",options:['P1', 'P5', 'High', 'Critical'],a:0,ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"What is notification content?",options:['Message', 'Title', 'Tags', 'All of these'],a:3,ref:"https://docs.datadoghq.com/monitors/notify/"},
+  {q:"Which variable shows value?",options:['{{value}}', '{{metric}}', '{{query}}', '{{result}}'],a:0,ref:"https://docs.datadoghq.com/monitors/notify/variables/"},
+  {q:"What is conditional content?",options:['If-then', 'Always', 'Never', 'Random'],a:0,ref:"https://docs.datadoghq.com/monitors/notify/"},
+  {q:"Which syntax for condition?",options:['{{#is}}', '{{if}}', '{{when}}', '{{check}}'],a:0,ref:"https://docs.datadoghq.com/monitors/notify/"},
+  {q:"What is notification handle?",options:['@mention', '#tag', 'email', 'phone'],a:0,ref:"https://docs.datadoghq.com/monitors/notify/"},
+  {q:"Which prefix for handle?",options:['@', '#', '$', '!'],a:0,ref:"https://docs.datadoghq.com/monitors/notify/"},
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 8 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  alert(message);
+  window.scrollTo(0, 0);
+}
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+render();
+</script>
+</body>
+</html>

@@ -15,15 +15,13 @@
       font-family: Arial, sans-serif;
       background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
       min-height: 100vh;
-      display: flex;
-      align-items: center;
-      justify-content: center;
       padding: 20px;
     }
     
     .container {
-      max-width: 800px;
+      max-width: 1200px;
       width: 100%;
+      margin: 0 auto;
       background: #fff;
       padding: 48px;
       border-radius: 16px;
@@ -45,8 +43,35 @@
       line-height: 1.6;
     }
     
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 16px;
+      margin-bottom: 40px;
+      padding: 24px;
+      background: #f9fafb;
+      border-radius: 12px;
+    }
+    
+    .stat-item {
+      text-align: center;
+    }
+    
+    .stat-number {
+      font-size: 2rem;
+      font-weight: bold;
+      color: #632ca6;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: #6b7280;
+      margin-top: 4px;
+    }
+    
     .exam-sets {
       display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
       gap: 20px;
       margin-top: 32px;
     }
@@ -80,7 +105,6 @@
     
     .set-badge {
       display: inline-block;
-      background: #632ca6;
       color: #fff;
       padding: 4px 12px;
       border-radius: 6px;
@@ -88,18 +112,22 @@
       font-weight: bold;
     }
     
-    .set-badge.set-1 {
-      background: #2563eb;
-    }
-    
-    .set-badge.set-2 {
-      background: #632ca6;
-    }
+    .set-1 { background: #2563eb; }
+    .set-2 { background: #632ca6; }
+    .set-3 { background: #dc2626; }
+    .set-4 { background: #f59e0b; }
+    .set-5 { background: #10b981; }
+    .set-6 { background: #3b82f6; }
+    .set-7 { background: #8b5cf6; }
+    .set-8 { background: #ec4899; }
+    .set-9 { background: #f97316; }
+    .set-10 { background: #14b8a6; }
     
     .exam-card p {
       color: #6b7280;
       line-height: 1.6;
       margin-bottom: 16px;
+      font-size: 0.875rem;
     }
     
     .exam-meta {
@@ -122,23 +150,16 @@
       gap: 8px;
       background: #632ca6;
       color: #fff;
-      padding: 12px 24px;
+      padding: 10px 20px;
       border-radius: 8px;
       font-weight: bold;
       margin-top: 12px;
       transition: background 0.3s ease;
-    }
-    
-    .cta-button.set-1 {
-      background: #2563eb;
+      font-size: 0.875rem;
     }
     
     .exam-card:hover .cta-button {
       background: #5a2595;
-    }
-    
-    .exam-card:hover .cta-button.set-1 {
-      background: #1d4ed8;
     }
     
     .footer {
@@ -167,6 +188,10 @@
       h1 {
         font-size: 2rem;
       }
+      
+      .exam-sets {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -174,41 +199,125 @@
   <div class="container">
     <h1>🎯 Datadog Fundamentals</h1>
     <p class="subtitle">
-      Practice exams to help you prepare for the Datadog Fundamentals certification. 
-      Each set contains 75 mixed questions covering all exam topics.
+      Comprehensive practice exams to help you prepare for the Datadog Fundamentals certification. 
+      Each set contains 75 mixed questions covering all exam topics with reference links.
     </p>
+    
+    <div class="stats">
+      <div class="stat-item">
+        <div class="stat-number">10</div>
+        <div class="stat-label">Practice Sets</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">750</div>
+        <div class="stat-label">Total Questions</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-number">100%</div>
+        <div class="stat-label">With Doc Links</div>
+      </div>
+    </div>
     
     <div class="exam-sets">
       <a href="set1.html" class="exam-card">
         <h2>Practice Exam <span class="set-badge set-1">Set 1</span></h2>
-        <p>Comprehensive 75-question practice exam covering Agent installation, metrics, tags, logs, dashboards, monitors, networking basics, and Linux fundamentals.</p>
+        <p>Agent installation, metrics, tags, logs, dashboards, monitors, networking & Linux fundamentals.</p>
         <div class="exam-meta">
           <span>📝 75 Questions</span>
-          <span>⏱️ ~60 minutes</span>
-          <span>🎓 All Topics</span>
+          <span>⏱️ ~60 min</span>
         </div>
-        <div class="cta-button set-1">
-          Start Set 1 →
-        </div>
+        <div class="cta-button">Start Set 1 →</div>
       </a>
       
       <a href="set2.html" class="exam-card">
         <h2>Practice Exam <span class="set-badge set-2">Set 2</span></h2>
-        <p>Comprehensive 75-question practice exam covering Agent configuration, metrics, tags, APM, logs, RUM, synthetics, SLOs, incident management, and more.</p>
+        <p>Agent configuration, APM, logs, RUM, synthetics, SLOs, incident management & more.</p>
         <div class="exam-meta">
           <span>📝 75 Questions</span>
-          <span>⏱️ ~60 minutes</span>
-          <span>🎓 All Topics</span>
+          <span>⏱️ ~60 min</span>
         </div>
-        <div class="cta-button set-2">
-          Start Set 2 →
-        </div>
+        <div class="cta-button">Start Set 2 →</div>
       </a>
       
-      <!-- Add more sets here in the future -->
-      <div style="text-align: center; padding: 32px; color: #9ca3af; font-style: italic;">
-        More practice sets coming soon...
-      </div>
+      <a href="set3.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-3">Set 3</span></h2>
+        <p>Advanced Agent topics, tags, dashboards, monitors, security & workflow automation.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 min</span>
+        </div>
+        <div class="cta-button">Start Set 3 →</div>
+      </a>
+      
+      <a href="set4.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-4">Set 4</span></h2>
+        <p>APM deep dive, tracing, logs, integrations, cloud platforms, RUM & synthetics.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 min</span>
+        </div>
+        <div class="cta-button">Start Set 4 →</div>
+      </a>
+      
+      <a href="set5.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-5">Set 5</span></h2>
+        <p>Network monitoring, database monitoring, CI/CD visibility, profiling & security.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 min</span>
+        </div>
+        <div class="cta-button">Start Set 5 →</div>
+      </a>
+      
+      <a href="set6.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-6">Set 6</span></h2>
+        <p>Events, notebooks, teams, RBAC, audit trails, billing & usage attribution.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 min</span>
+        </div>
+        <div class="cta-button">Start Set 6 →</div>
+      </a>
+      
+      <a href="set7.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-7">Set 7</span></h2>
+        <p>Kubernetes deep dive, containers, service mesh, security contexts & volumes.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 min</span>
+        </div>
+        <div class="cta-button">Start Set 7 →</div>
+      </a>
+      
+      <a href="set8.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-8">Set 8</span></h2>
+        <p>Metric aggregation, functions, rollups, forecasting, anomaly & change detection.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 min</span>
+        </div>
+        <div class="cta-button">Start Set 8 →</div>
+      </a>
+      
+      <a href="set9.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-9">Set 9</span></h2>
+        <p>Span tags, trace sampling, service dependencies, distributed tracing & profiling.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 min</span>
+        </div>
+        <div class="cta-button">Start Set 9 →</div>
+      </a>
+      
+      <a href="set10.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-10">Set 10</span></h2>
+        <p>Log facets, parsing, processors, pipelines, archives, rehydration & analytics.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 min</span>
+        </div>
+        <div class="cta-button">Start Set 10 →</div>
+      </a>
     </div>
     
     <div class="footer">
@@ -216,6 +325,9 @@
       <p style="margin-top: 8px;">
         For official documentation, visit 
         <a href="https://docs.datadoghq.com/" target="_blank">docs.datadoghq.com</a>
+      </p>
+      <p style="margin-top: 16px; font-size: 0.75rem; color: #9ca3af;">
+        All 750 questions include reference links to official Datadog documentation
       </p>
     </div>
   </div>

@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 5</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#10b981; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 5</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 5) covering all major topics. Educational use only.</p>
+  <div id="quiz"></div>
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+<script>
+const questions = [
+  {q:"What is the Agent's trace buffer size?",options:["1000 traces","5000 traces","10000 traces","Unlimited"],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which command runs Agent self-check?",options:["datadog-agent check","datadog-agent health","datadog-agent diagnose","datadog-agent status"],a:2,ref:"https://docs.datadoghq.com/agent/troubleshooting/"},
+  {q:"What is network performance monitoring?",options:["Host metrics","Network traffic analysis","APM traces","Log collection"],a:1,ref:"https://docs.datadoghq.com/network_monitoring/"},
+  {q:"Which metric shows network throughput?",options:["system.net.bytes_sent","network.throughput","net.bytes","bytes.sent"],a:0,ref:"https://docs.datadoghq.com/network_monitoring/"},
+  {q:"What is process monitoring?",options:["CPU only","All process metrics","Memory only","Disk only"],a:1,ref:"https://docs.datadoghq.com/infrastructure/process/"},
+  {q:"Which integration monitors Redis?",options:["Redis","Cache","NoSQL","Key-Value"],a:0,ref:"https://docs.datadoghq.com/integrations/redisdb/"},
+  {q:"What is check initialization?",options:["Agent start","First check run","Configuration load","All of these"],a:3,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"Which metric type never decreases?",options:["Gauge","Monotonic count","Rate","Histogram"],a:1,ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"What is metric metadata?",options:["Values","Type and unit info","Tags","Timestamps"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which view shows cost metrics?",options:["Usage","Billing","Metrics","Infrastructure"],a:0,ref:"https://docs.datadoghq.com/account_management/billing/"},
+  {q:"What is dashboard TV mode?",options:["Mobile view","Full-screen display","Tablet view","Desktop only"],a:1,ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"Which widget type shows lists?",options:["Toplist","Table","Query value","List"],a:0,ref:"https://docs.datadoghq.com/dashboards/widgets/top_list/"},
+  {q:"What is anomaly detection?",options:["Error finding","ML-based threshold","Static threshold","Manual review"],a:1,ref:"https://docs.datadoghq.com/monitors/types/anomaly/"},
+  {q:"Which monitor uses ML?",options:["Metric","Anomaly","Forecast","Outlier"],a:1,ref:"https://docs.datadoghq.com/monitors/types/anomaly/"},
+  {q:"What is outlier detection?",options:["Error finding","Detect unusual hosts","Find metrics","Tag analysis"],a:1,ref:"https://docs.datadoghq.com/monitors/types/outlier/"},
+  {q:"Which language supports APM?",options:["Python","Java","Go","All of these"],a:3,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is manual instrumentation?",options:["Auto tracing","Custom spans in code","Agent config","Integration"],a:1,ref:"https://docs.datadoghq.com/tracing/trace_collection/custom_instrumentation/"},
+  {q:"Which span tag shows resource?",options:["resource","resource.name","span.resource","resource_name"],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace metrics?",options:["Span count","Aggregated trace data","Service map","Error rate"],a:1,ref:"https://docs.datadoghq.com/tracing/metrics/"},
+  {q:"Which retention is longest?",options:["Live traces","Indexed traces","Trace metrics","Sampled traces"],a:2,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/trace_retention/"},
+  {q:"What is log enrichment?",options:["Add context","Delete logs","Compress logs","Archive logs"],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"Which processor adds tags?",options:["Tag remapper","Service remapper","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is log metrics?",options:["Log count","Metrics from logs","Log size","Log rate"],a:1,ref:"https://docs.datadoghq.com/logs/logs_to_metrics/"},
+  {q:"Which status is for errors?",options:["error","warn","critical","fatal"],a:0,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is log transaction?",options:["Single log","Group of related logs","Log archive","Log pipeline"],a:1,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which service monitors ELB?",options:["Load Balancer","AWS ELB","CloudWatch","EC2"],a:1,ref:"https://docs.datadoghq.com/integrations/amazon_elb/"},
+  {q:"What is OpenTelemetry?",options:["Open standard","Datadog feature","Cloud service","Agent type"],a:0,ref:"https://docs.datadoghq.com/tracing/trace_collection/open_standards/"},
+  {q:"Which protocol does OTLP use?",options:["HTTP","gRPC","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/tracing/trace_collection/open_standards/otlp_ingest_in_the_agent/"},
+  {q:"What is service catalog?",options:["Service list","Service metadata repository","API list","Dashboard list"],a:1,ref:"https://docs.datadoghq.com/tracing/service_catalog/"},
+  {q:"Which attribute is in catalog?",options:["Owner","Language","Links","All of these"],a:3,ref:"https://docs.datadoghq.com/tracing/service_catalog/"},
+  {q:"What is security monitoring?",options:["Infrastructure","Threat detection","APM","Logs"],a:1,ref:"https://docs.datadoghq.com/security/"},
+  {q:"Which product detects threats?",options:["Cloud SIEM","APM","Metrics","Logs"],a:0,ref:"https://docs.datadoghq.com/security/cloud_siem/"},
+  {q:"What is application security?",options:["Infrastructure","Code-level security","Network security","All of these"],a:1,ref:"https://docs.datadoghq.com/security/application_security/"},
+  {q:"Which agent component handles security?",options:["Core agent","Security agent","APM agent","Log agent"],a:1,ref:"https://docs.datadoghq.com/security/"},
+  {q:"What is compliance monitoring?",options:["Cost tracking","Security compliance","Performance","Availability"],a:1,ref:"https://docs.datadoghq.com/security/cspm/"},
+  {q:"Which standard does CSPM support?",options:["CIS","PCI-DSS","HIPAA","All of these"],a:3,ref:"https://docs.datadoghq.com/security/cspm/"},
+  {q:"What is cloud workload security?",options:["Cost optimization","Runtime security","Backup","Migration"],a:1,ref:"https://docs.datadoghq.com/security/cloud_workload_security/"},
+  {q:"Which resource does CWS monitor?",options:["Files","Processes","Network","All of these"],a:3,ref:"https://docs.datadoghq.com/security/cloud_workload_security/"},
+  {q:"What is signal in security?",options:["Network traffic","Security event","Metric","Log"],a:1,ref:"https://docs.datadoghq.com/security/"},
+  {q:"Which view shows signals?",options:["Security Signals","Events","Logs","Traces"],a:0,ref:"https://docs.datadoghq.com/security/"},
+  {q:"What is workflow automation?",options:["Manual tasks","Automated responses","Dashboards","Monitors"],a:1,ref:"https://docs.datadoghq.com/workflows/"},
+  {q:"Which trigger starts workflow?",options:["Monitor","Schedule","Manual","All of these"],a:3,ref:"https://docs.datadoghq.com/workflows/"},
+  {q:"What is workflow action?",options:["Monitor","Step in workflow","Dashboard","Metric"],a:1,ref:"https://docs.datadoghq.com/workflows/"},
+  {q:"Which service workflows integrate?",options:["Slack","AWS","PagerDuty","All of these"],a:3,ref:"https://docs.datadoghq.com/workflows/"},
+  {q:"What is app builder?",options:["Mobile apps","Custom internal tools","APIs","Dashboards"],a:1,ref:"https://docs.datadoghq.com/app_builder/"},
+  {q:"Which component builds apps?",options:["Canvas","Builder","Designer","All of these"],a:0,ref:"https://docs.datadoghq.com/app_builder/"},
+  {q:"What is database monitoring?",options:["Only queries","Full DB performance","Backups","Migrations"],a:1,ref:"https://docs.datadoghq.com/database_monitoring/"},
+  {q:"Which DB is supported?",options:["PostgreSQL","MySQL","SQL Server","All of these"],a:3,ref:"https://docs.datadoghq.com/database_monitoring/"},
+  {q:"What is query sample?",options:["Single query","Query execution example","Sample data","Test query"],a:1,ref:"https://docs.datadoghq.com/database_monitoring/"},
+  {q:"Which metric shows DB load?",options:["Active sessions","Connections","Queries/sec","All of these"],a:3,ref:"https://docs.datadoghq.com/database_monitoring/"},
+  {q:"What is explain plan?",options:["Query doc","Query execution plan","Query result","Query history"],a:1,ref:"https://docs.datadoghq.com/database_monitoring/"},
+  {q:"Which view shows slow queries?",options:["Query Metrics","Query Samples","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/database_monitoring/"},
+  {q:"What is data streams monitoring?",options:["Log streaming","Kafka monitoring","Video streams","Network streams"],a:1,ref:"https://docs.datadoghq.com/data_streams/"},
+  {q:"Which platform is supported?",options:["Kafka","RabbitMQ","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/data_streams/"},
+  {q:"What is pipeline latency?",options:["API latency","Message processing delay","Network delay","Query delay"],a:1,ref:"https://docs.datadoghq.com/data_streams/"},
+  {q:"Which metric shows backlog?",options:["Consumer lag","Queue size","Pending messages","All of these"],a:3,ref:"https://docs.datadoghq.com/data_streams/"},
+  {q:"What is universal service monitoring?",options:["All services","Service mesh monitoring","APM alternative","Kubernetes only"],a:2,ref:"https://docs.datadoghq.com/universal_service_monitoring/"},
+  {q:"Which data does USM use?",options:["Traces only","Metrics only","Both traces and metrics","Logs"],a:2,ref:"https://docs.datadoghq.com/universal_service_monitoring/"},
+  {q:"What is CI visibility?",options:["Code review","Pipeline monitoring","Test tracking","Both B and C"],a:3,ref:"https://docs.datadoghq.com/continuous_integration/"},
+  {q:"Which CI platform is supported?",options:["Jenkins","GitLab","GitHub Actions","All of these"],a:3,ref:"https://docs.datadoghq.com/continuous_integration/"},
+  {q:"What is test visibility?",options:["Test coverage","Test performance tracking","Test results","All of these"],a:3,ref:"https://docs.datadoghq.com/continuous_integration/tests/"},
+  {q:"Which metric shows CI health?",options:["Pass rate","Duration","Flaky tests","All of these"],a:3,ref:"https://docs.datadoghq.com/continuous_integration/"},
+  {q:"What is intelligent test runner?",options:["Test framework","Skip unnecessary tests","Run all tests","Test generator"],a:1,ref:"https://docs.datadoghq.com/continuous_integration/intelligent_test_runner/"},
+  {q:"Which test type is tracked?",options:["Unit","Integration","E2E","All of these"],a:3,ref:"https://docs.datadoghq.com/continuous_integration/tests/"},
+  {q:"What is profiler?",options:["Code analyzer","Performance profiler","Error tracker","All of these"],a:1,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"Which language supports profiling?",options:["Java","Python","Go","All of these"],a:3,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"What does profiler show?",options:["CPU usage","Memory allocation","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"Which view displays profile?",options:["Flame graph","Timeline","Table","All of these"],a:3,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"What is code hotspot?",options:["Bug location","Performance bottleneck","Error prone code","Popular code"],a:1,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"Which overhead does profiler add?",options:["None","<1%","5-10%","20%+"],a:1,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"What is dynamic instrumentation?",options:["Auto tracing","Add logs without restart","Manual coding","Agent config"],a:1,ref:"https://docs.datadoghq.com/dynamic_instrumentation/"},
+  {q:"Which IDE is supported?",options:["VSCode","IntelliJ","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/developers/ide_plugins/"},
+  {q:"What is API catalog?",options:["API list","API performance tracking","API docs","All of these"],a:3,ref:"https://docs.datadoghq.com/tracing/api_catalog/"}
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 5 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  alert(message);
+  window.scrollTo(0, 0);
+}
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+render();
+</script>
+</body>
+</html>

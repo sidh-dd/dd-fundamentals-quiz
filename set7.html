@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 7</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#8b5cf6; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 7</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 7) covering all major topics. Educational use only.</p>
+  <div id="quiz"></div>
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+<script>
+const questions = [
+  {q:"What is agent version format?",options:['Major.Minor.Patch', 'YYYYMMDD', 'Sequential', 'Random'],a:0,ref:"https://docs.datadoghq.com/agent/"},
+  {q:"Which agent release channel?",options:['Stable', 'Beta', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/agent/"},
+  {q:"What is agent upgrade command?",options:['upgrade agent', 'apt upgrade datadog-agent', 'update-agent', 'agent update'],a:1,ref:"https://docs.datadoghq.com/agent/versions/"},
+  {q:"Which OS is supported?",options:['Linux', 'Windows', 'MacOS', 'All of these'],a:3,ref:"https://docs.datadoghq.com/agent/"},
+  {q:"What is containerized agent?",options:['VM agent', 'Docker agent', 'Physical agent', 'Cloud agent'],a:1,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"Which container runtime?",options:['Docker', 'containerd', 'CRI-O', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"What is daemonset?",options:['K8s workload', 'Service', 'Pod', 'Container'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which namespace for agent?",options:['default', 'kube-system', 'datadog', 'Any'],a:2,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is node selector?",options:['Pod placement', 'Service', 'Volume', 'Secret'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which toleration is needed?",options:['Master', 'NoSchedule', 'All', 'None'],a:1,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is service account?",options:['K8s identity', 'User', 'Group', 'Role'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which permission required?",options:['ClusterRole', 'Role', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is RBAC policy?",options:['Access control', 'Network policy', 'Storage', 'Secret'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which verb is needed?",options:['get', 'list', 'watch', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is pod annotation?",options:['Metadata', 'Label', 'Tag', 'Config'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which annotation for checks?",options:['ad.datadoghq.com', 'check', 'integration', 'autodiscovery'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/integrations/"},
+  {q:"What is config map?",options:['K8s config', 'Secret', 'Volume', 'Service'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which data in configmap?",options:['YAML', 'JSON', 'ENV', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is kubernetes secret?",options:['Sensitive data', 'Public data', 'Config', 'Volume'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which secret type for keys?",options:['Opaque', 'TLS', 'Basic', 'Token'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is liveness probe?",options:['Health check', 'Startup', 'Readiness', 'All checks'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which endpoint for probe?",options:['/health', '/ready', '/live', '/status'],a:2,ref:"https://docs.datadoghq.com/agent/"},
+  {q:"What is resource limit?",options:['CPU/Memory cap', 'Disk', 'Network', 'All resources'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which unit for CPU?",options:['Cores', 'Millicores', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is resource request?",options:['Minimum resource', 'Maximum', 'Average', 'None'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which affects scheduling?",options:['Request', 'Limit', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is persistent volume?",options:['Storage', 'Compute', 'Network', 'Memory'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which access mode exists?",options:['ReadWriteOnce', 'ReadOnlyMany', 'ReadWriteMany', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is statefulset?",options:['Ordered pods', 'Stateless', 'Deployment', 'Service'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which workload is stateful?",options:['Database', 'Web server', 'Load balancer', 'Cache'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is horizontal scaling?",options:['Add pods', 'Vertical', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which metric for HPA?",options:['CPU', 'Memory', 'Custom', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is cluster autoscaler?",options:['Add nodes', 'Add pods', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which cloud supports autoscaler?",options:['AWS', 'GCP', 'Azure', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is ingress?",options:['External access', 'Internal', 'Service', 'Pod'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which controller for ingress?",options:['NGINX', 'Traefik', 'HAProxy', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is network policy?",options:['Traffic rules', 'Service mesh', 'Load balancer', 'Firewall'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which plugin for policy?",options:['Calico', 'Cilium', 'Weave', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is service mesh?",options:['Traffic management', 'Storage', 'Compute', 'Database'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which mesh is supported?",options:['Istio', 'Linkerd', 'Consul', 'All of these'],a:3,ref:"https://docs.datadoghq.com/tracing/trace_collection/proxy_setup/"},
+  {q:"What is sidecar injection?",options:['Add container', 'Remove', 'Update', 'All of these'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which label enables injection?",options:['istio-injection', 'sidecar', 'inject', 'mesh'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is admission controller?",options:['Validate resources', 'Create', 'Delete', 'Update'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which webhook type?",options:['Mutating', 'Validating', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is pod security?",options:['Security policy', 'Network', 'Storage', 'Compute'],a:0,ref:"https://docs.datadoghq.com/security/"},
+  {q:"Which level exists?",options:['Privileged', 'Baseline', 'Restricted', 'All of these'],a:3,ref:"https://docs.datadoghq.com/security/"},
+  {q:"What is security context?",options:['Pod settings', 'Network', 'Volume', 'Service'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which capability to drop?",options:['ALL', 'NET_RAW', 'CHOWN', 'SYS_ADMIN'],a:0,ref:"https://docs.datadoghq.com/security/"},
+  {q:"What is read-only filesystem?",options:['Root FS', 'Writable', 'Temporary', 'Persistent'],a:0,ref:"https://docs.datadoghq.com/security/"},
+  {q:"Which directory writable?",options:['/tmp', '/var', '/opt', 'All of these'],a:0,ref:"https://docs.datadoghq.com/security/"},
+  {q:"What is non-root user?",options:['UID > 0', 'UID = 0', 'Any UID', 'Random'],a:0,ref:"https://docs.datadoghq.com/security/"},
+  {q:"Which UID is root?",options:['0', '1', '1000', 'Any'],a:0,ref:"https://docs.datadoghq.com/security/"},
+  {q:"What is privileged mode?",options:['Full access', 'Limited', 'Restricted', 'None'],a:0,ref:"https://docs.datadoghq.com/security/"},
+  {q:"Which pod needs privileged?",options:['Agent', 'App', 'Database', 'None'],a:0,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"What is host network?",options:['Pod uses host', 'Separate', 'Bridge', 'NAT'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which mode for agent?",options:['Host', 'Bridge', 'None', 'Overlay'],a:0,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"What is volume mount?",options:['Attach storage', 'Network', 'Compute', 'Memory'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which type for temp storage?",options:['emptyDir', 'hostPath', 'PVC', 'ConfigMap'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is host path?",options:['Node directory', 'Container', 'Pod', 'Service'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which socket for Docker?",options:['/var/run/docker.sock', '/docker.sock', '/run/docker', '/sock'],a:0,ref:"https://docs.datadoghq.com/containers/docker/"},
+  {q:"What is API server?",options:['K8s control plane', 'Worker', 'Database', 'Cache'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which port for API?",options:['443', '6443', '8080', '80'],a:1,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is kubelet?",options:['Node agent', 'Controller', 'Scheduler', 'API'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which port for kubelet?",options:['10250', '8080', '443', '6443'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is container runtime interface?",options:['Standard API', 'Specific API', 'No API', 'Custom'],a:0,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"Which CRI implementation?",options:['containerd', 'CRI-O', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"What is image pull policy?",options:['Always', 'IfNotPresent', 'Never', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which registry for images?",options:['Docker Hub', 'GCR', 'ECR', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"What is image pull secret?",options:['Registry auth', 'API key', 'Password', 'Token'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which type for secret?",options:['docker-registry', 'Opaque', 'TLS', 'Token'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is environment variable?",options:['Config', 'Secret', 'Volume', 'Service'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"Which source for env?",options:['ConfigMap', 'Secret', 'Field', 'All of these'],a:3,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is command override?",options:['Change entrypoint', 'Args', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/containers/"},
+  {q:"Which field for command?",options:['command', 'cmd', 'entrypoint', 'args'],a:0,ref:"https://docs.datadoghq.com/containers/kubernetes/"},
+  {q:"What is working directory?",options:['Container path', 'Host path', 'Volume', 'Mount'],a:0,ref:"https://docs.datadoghq.com/containers/"},
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 7 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  alert(message);
+  window.scrollTo(0, 0);
+}
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+render();
+</script>
+</body>
+</html>

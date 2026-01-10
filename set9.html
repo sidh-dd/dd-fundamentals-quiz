@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 9</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#f97316; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 9</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 9) covering all major topics. Educational use only.</p>
+  <div id="quiz"></div>
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+<script>
+const questions = [
+  {q:"What is span tag?",options:['Metadata', 'Duration', 'Service', 'Trace ID'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which tag is standard?",options:['env', 'service', 'version', 'All of these'],a:3,ref:"https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/"},
+  {q:"What is span attribute?",options:['Key-value data', 'Tag', 'Metric', 'Log'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which attribute shows error?",options:['error.type', 'error.message', 'error.stack', 'All of these'],a:3,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is root span?",options:['First span', 'Last span', 'Any span', 'No span'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which span has no parent?",options:['Root', 'Child', 'Leaf', 'All'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is child span?",options:['Nested operation', 'Parent', 'Root', 'Sibling'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which relationship exists?",options:['Parent-child', 'Sibling', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is span context?",options:['Propagated data', 'Local only', 'No context', 'Random'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_collection/trace_context_propagation/"},
+  {q:"Which data in context?",options:['Trace ID', 'Span ID', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/tracing/trace_collection/trace_context_propagation/"},
+  {q:"What is trace priority?",options:['Sampling decision', 'Duration', 'Size', 'Count'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"Which value keeps trace?",options:['1', '0', '-1', 'Any'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"What is sampling rate?",options:['Percentage kept', 'All', 'None', 'Random'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"Which rate is default?",options:['10%', '50%', '100%', 'Dynamic'],a:3,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"What is head sampling?",options:['At trace start', 'At end', 'Random', 'No sampling'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"Which decides early?",options:['Head', 'Tail', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"What is tail sampling?",options:['After trace completes', 'Before', 'During', 'Never'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"Which is more accurate?",options:['Tail', 'Head', 'Same', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"What is trace tag?",options:['Metadata', 'Duration', 'Count', 'Size'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which tag scope?",options:['Trace level', 'Span level', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace metrics?",options:['Aggregated data', 'Raw traces', 'Logs', 'Events'],a:0,ref:"https://docs.datadoghq.com/tracing/metrics/"},
+  {q:"Which metric for requests?",options:['trace.requests', 'hits', 'calls', 'count'],a:0,ref:"https://docs.datadoghq.com/tracing/metrics/"},
+  {q:"What is trace duration?",options:['Time taken', 'Size', 'Count', 'Rate'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which unit for duration?",options:['Nanoseconds', 'Seconds', 'Minutes', 'Hours'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace error?",options:['Failed request', 'Success', 'Pending', 'All'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which status for error?",options:['error', 'failed', 'false', '1'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is service dependency?",options:['Call relationship', 'Independent', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/services/service_map/"},
+  {q:"Which view shows dependencies?",options:['Service Map', 'Service List', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/services/service_map/"},
+  {q:"What is service performance?",options:['Metrics', 'Traces', 'Logs', 'All'],a:0,ref:"https://docs.datadoghq.com/tracing/services/"},
+  {q:"Which metric shows speed?",options:['Latency', 'Throughput', 'Errors', 'All of these'],a:3,ref:"https://docs.datadoghq.com/tracing/services/"},
+  {q:"What is resource?",options:['Endpoint', 'Service', 'Host', 'All'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which resource type?",options:['HTTP', 'Database', 'Cache', 'All of these'],a:3,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is operation name?",options:['Span type', 'Service', 'Resource', 'Tag'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which operation for web?",options:['http.request', 'web.request', 'http', 'request'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace analysis?",options:['Query traces', 'Create', 'Delete', 'Forward'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_explorer/"},
+  {q:"Which field is searchable?",options:['Tags', 'Duration', 'Service', 'All of these'],a:3,ref:"https://docs.datadoghq.com/tracing/trace_explorer/"},
+  {q:"What is trace retention filter?",options:['Keep certain traces', 'Delete all', 'Archive', 'Forward'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/trace_retention/"},
+  {q:"Which basis for filter?",options:['Tags', 'Duration', 'Service', 'All of these'],a:3,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/trace_retention/"},
+  {q:"What is span aggregation?",options:['Group spans', 'Delete', 'Forward', 'Archive'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which aggregation type?",options:['Service', 'Resource', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is custom span?",options:['Manual instrumentation', 'Auto', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_collection/custom_instrumentation/"},
+  {q:"Which library for custom?",options:['Tracer', 'Agent', 'API', 'All'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_collection/custom_instrumentation/"},
+  {q:"What is span link?",options:['Connect spans', 'Separate', 'Delete', 'Copy'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which scenario for links?",options:['Async', 'Batch', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace ingestion?",options:['Send to Datadog', 'Store', 'Query', 'Delete'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"Which protocol for ingestion?",options:['HTTP', 'gRPC', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace indexing?",options:['Store for search', 'Delete', 'Forward', 'Archive'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/trace_retention/"},
+  {q:"Which retention for indexed?",options:['15 days', '30 days', '90 days', 'Custom'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/trace_retention/"},
+  {q:"What is live trace?",options:['Real-time', 'Historical', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_explorer/"},
+  {q:"Which mode shows live?",options:['Live Search', 'Historical', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_explorer/live_search/"},
+  {q:"What is trace search?",options:['Query indexed traces', 'Live only', 'All traces', 'No search'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_explorer/"},
+  {q:"Which syntax for search?",options:['key:value', 'value', 'key=value', 'key'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_explorer/"},
+  {q:"What is trace comparison?",options:['Compare versions', 'Single only', 'No compare', 'Random'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which dimension for compare?",options:['Service', 'Resource', 'Version', 'All of these'],a:3,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is distributed context?",options:['Propagated metadata', 'Local only', 'No context', 'Random'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_collection/trace_context_propagation/"},
+  {q:"Which standard for context?",options:['W3C', 'B3', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/tracing/trace_collection/trace_context_propagation/"},
+  {q:"What is baggage?",options:['Custom context data', 'Trace ID', 'Span ID', 'Service'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_collection/trace_context_propagation/"},
+  {q:"Which propagates baggage?",options:['Headers', 'Body', 'Query', 'Cookie'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_collection/trace_context_propagation/"},
+  {q:"What is single span sampling?",options:['Sample specific spans', 'All spans', 'No spans', 'Random'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"Which span to keep?",options:['Errors', 'Slow', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"What is app analytics?",options:['Deprecated feature', 'Current', 'Future', 'Never'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which replaces analytics?",options:['Trace analytics', 'APM', 'Metrics', 'None'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_explorer/"},
+  {q:"What is tracer configuration?",options:['Library settings', 'Agent', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/trace_collection/library_config/"},
+  {q:"Which method for config?",options:['Environment vars', 'Code', 'Both', 'Neither'],a:2,ref:"https://docs.datadoghq.com/tracing/trace_collection/library_config/"},
+  {q:"What is partial flush?",options:['Send incomplete trace', 'Wait for complete', 'Random', 'Never'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which size triggers flush?",options:['1000 spans', '10 spans', '100 spans', 'Unlimited'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace buffer?",options:['Temporary storage', 'Permanent', 'No storage', 'Random'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which overflow behavior?",options:['Drop oldest', 'Drop newest', 'Expand', 'Crash'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace serialization?",options:['Convert to format', 'Storage', 'Query', 'Delete'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which format for traces?",options:['msgpack', 'JSON', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace correlation?",options:['Link with logs', 'Separate', 'No link', 'Random'],a:0,ref:"https://docs.datadoghq.com/tracing/other_telemetry/connect_logs_and_traces/"},
+  {q:"Which ID links traces?",options:['trace_id', 'span_id', 'Both', 'Neither'],a:0,ref:"https://docs.datadoghq.com/tracing/other_telemetry/connect_logs_and_traces/"},
+  {q:"What is continuous profiler?",options:['Always-on profiling', 'Manual', 'One-time', 'Never'],a:0,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"Which data profiler shows?",options:['CPU', 'Memory', 'Thread', 'All of these'],a:3,ref:"https://docs.datadoghq.com/profiler/"},
+  {q:"What is profile type?",options:['CPU', 'Wall time', 'Heap', 'All of these'],a:3,ref:"https://docs.datadoghq.com/profiler/"},
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  updateProgress();
+}
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 9 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  alert(message);
+  window.scrollTo(0, 0);
+}
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+render();
+</script>
+</body>
+</html>

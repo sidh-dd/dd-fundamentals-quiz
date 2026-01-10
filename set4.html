@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 4</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#f59e0b; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 4</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 4) covering all major topics. Educational use only.</p>
+
+  <div id="quiz"></div>
+
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+
+<script>
+// SET 4 – 75 QUESTIONS
+const questions = [
+  // APM & Tracing (1-20)
+  {q:"What library instruments Node.js apps?",options:["dd-trace","node-tracer","datadog-node","apm-node"],a:0,ref:"https://docs.datadoghq.com/tracing/setup_overview/setup/nodejs/"},
+  {q:"What is trace sampling?",options:["Delete traces","Select subset of traces","Compress traces","Archive traces"],a:1,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/ingestion_mechanisms/"},
+  {q:"Which header propagates trace context?",options:["X-Trace-ID","X-Datadog-Trace-Id","Trace-Context","DD-Trace-ID"],a:1,ref:"https://docs.datadoghq.com/tracing/trace_collection/trace_context_propagation/"},
+  {q:"What is a service in APM?",options:["Server","Set of processes with same function","Database","API endpoint"],a:1,ref:"https://docs.datadoghq.com/tracing/services/"},
+  {q:"What does span duration measure?",options:["Queue time","Operation execution time","Network latency","Total request time"],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+  
+  {q:"Which environment variable enables trace debug mode?",options:["DD_DEBUG","DD_TRACE_DEBUG","TRACE_DEBUG","DEBUG_MODE"],a:1,ref:"https://docs.datadoghq.com/tracing/troubleshooting/"},
+  {q:"What is a trace flame graph?",options:["Error visualization","Execution time visualization","Network diagram","Service map"],a:1,ref:"https://docs.datadoghq.com/tracing/trace_explorer/"},
+  {q:"Which metric type does APM use?",options:["Custom","Trace","Distribution","Gauge"],a:1,ref:"https://docs.datadoghq.com/tracing/metrics/"},
+  {q:"What is trace retention?",options:["Delete policy","Storage duration","Sampling rate","Archive location"],a:1,ref:"https://docs.datadoghq.com/tracing/trace_pipeline/trace_retention/"},
+  {q:"Which tag links traces to logs?",options:["trace_id","dd.trace_id","span_id","service"],a:1,ref:"https://docs.datadoghq.com/tracing/other_telemetry/connect_logs_and_traces/"},
+  
+  {q:"What is automatic instrumentation?",options:["Manual code changes","Zero-code tracing","Custom spans","Agent configuration"],a:1,ref:"https://docs.datadoghq.com/tracing/trace_collection/automatic_instrumentation/"},
+  {q:"Which view shows service dependencies?",options:["Service List","Service Map","Trace List","Flame Graph"],a:1,ref:"https://docs.datadoghq.com/tracing/services/service_map/"},
+  {q:"What is span metadata?",options:["Duration only","Tags and context","Service name","Trace ID"],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which protocol is used for trace ingestion?",options:["HTTP","gRPC","Both HTTP and gRPC","WebSocket"],a:2,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is trace search?",options:["Find services","Query traces by tags","View metrics","Create dashboards"],a:1,ref:"https://docs.datadoghq.com/tracing/trace_explorer/"},
+  
+  {q:"Which span tag indicates errors?",options:["error","error.type","is_error","has_error"],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is distributed tracing?",options:["Multiple hosts","Track requests across services","Parallel traces","Load balancing"],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which library is for Python tracing?",options:["ddtrace","py-tracer","datadog-python","apm-python"],a:0,ref:"https://docs.datadoghq.com/tracing/setup_overview/setup/python/"},
+  {q:"What is trace analytics?",options:["Metric aggregation","Indexed span search","Log analysis","Dashboard creation"],a:1,ref:"https://docs.datadoghq.com/tracing/trace_explorer/"},
+  {q:"Which environment variable sets service name?",options:["SERVICE","DD_SERVICE","SERVICE_NAME","DD_SERVICE_NAME"],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+  
+  // Logs (21-35)
+  {q:"What is log forwarding?",options:["Delete logs","Send logs to Datadog","Archive logs","Parse logs"],a:1,ref:"https://docs.datadoghq.com/logs/log_collection/"},
+  {q:"Which processor extracts fields?",options:["Grok parser","Remapper","Arithmetic","Category"],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is log rehydration?",options:["Restore from archives","Delete logs","Compress logs","Forward logs"],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/rehydrating/"},
+  {q:"Which attribute is automatically indexed?",options:["message","status","host","All of these"],a:3,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is log exclusion filter?",options:["Delete permanently","Don't index certain logs","Archive logs","Compress logs"],a:1,ref:"https://docs.datadoghq.com/logs/log_configuration/indexes/"},
+  
+  {q:"Which protocol collects syslog?",options:["HTTP","TCP/UDP","FTP","SSH"],a:1,ref:"https://docs.datadoghq.com/integrations/rsyslog/"},
+  {q:"What is log pattern?",options:["Regex filter","Automatic grouping","Manual tag","Dashboard widget"],a:1,ref:"https://docs.datadoghq.com/logs/explorer/"},
+  {q:"Which processor changes attribute names?",options:["Remapper","Grok","Arithmetic","String builder"],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is log archive?",options:["Delete logs","Long-term storage","Compress logs","Index logs"],a:1,ref:"https://docs.datadoghq.com/logs/log_configuration/archives/"},
+  {q:"Which format is best for structured logs?",options:["Plain text","JSON","CSV","XML"],a:1,ref:"https://docs.datadoghq.com/logs/"},
+  
+  {q:"What is log sampling?",options:["Delete logs","Collect subset","Compress logs","Archive logs"],a:1,ref:"https://docs.datadoghq.com/logs/log_configuration/"},
+  {q:"Which processor performs calculations?",options:["Arithmetic","Grok","Remapper","Lookup"],a:0,ref:"https://docs.datadoghq.com/logs/log_configuration/processors/"},
+  {q:"What is log attribute?",options:["Tag","Key-value pair","Metric","Status"],a:1,ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which view shows log patterns?",options:["Log List","Patterns","Analytics","Live Tail"],a:1,ref:"https://docs.datadoghq.com/logs/explorer/"},
+  {q:"What is Live Tail?",options:["Archive logs","Real-time log streaming","Log search","Log metrics"],a:1,ref:"https://docs.datadoghq.com/logs/explorer/live_tail/"},
+  
+  // Integrations & Cloud (36-50)
+  {q:"Which AWS service forwards logs?",options:["S3","Lambda","Kinesis","All of these"],a:3,ref:"https://docs.datadoghq.com/integrations/amazon_web_services/"},
+  {q:"What is Azure integration type?",options:["Agentless","Agent-based","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/integrations/azure/"},
+  {q:"Which GCP method uses API?",options:["Service account","OAuth","API key","SSH"],a:0,ref:"https://docs.datadoghq.com/integrations/google_cloud_platform/"},
+  {q:"What is Kubernetes Cluster Agent?",options:["Node agent","Cluster-level agent","Pod agent","Container agent"],a:1,ref:"https://docs.datadoghq.com/containers/cluster_agent/"},
+  {q:"Which label autodiscovery uses?",options:["datadog","ad.datadoghq.com","autodiscovery","dd.autodiscovery"],a:1,ref:"https://docs.datadoghq.com/containers/kubernetes/integrations/"},
+  
+  {q:"What is Docker socket?",options:["Network port","Unix socket for API","Container","Volume"],a:1,ref:"https://docs.datadoghq.com/containers/docker/"},
+  {q:"Which integration monitors Postgres?",options:["PostgreSQL","Database","SQL","Postgres"],a:0,ref:"https://docs.datadoghq.com/integrations/postgres/"},
+  {q:"What is NGINX integration type?",options:["Agentless","Agent check","Cloud","Custom"],a:1,ref:"https://docs.datadoghq.com/integrations/nginx/"},
+  {q:"Which AWS permission is required?",options:["Full access","ReadOnly","Custom policy","Admin"],a:2,ref:"https://docs.datadoghq.com/integrations/amazon_web_services/"},
+  {q:"What is CloudFormation template?",options:["Manual setup","Automated AWS setup","Azure setup","GCP setup"],a:1,ref:"https://docs.datadoghq.com/integrations/amazon_web_services/"},
+  
+  {q:"Which label enables K8s checks?",options:["check","ad.datadoghq.com/check","integration","autodiscovery"],a:1,ref:"https://docs.datadoghq.com/containers/kubernetes/integrations/"},
+  {q:"What is ECS task definition?",options:["Docker config","Container specification","Service mesh","Network rule"],a:1,ref:"https://docs.datadoghq.com/containers/amazon_ecs/"},
+  {q:"Which integration uses JMX?",options:["Java apps","Python apps","Node apps","Ruby apps"],a:0,ref:"https://docs.datadoghq.com/integrations/java/"},
+  {q:"What is Lambda extension?",options:["Function code","Monitoring layer","API Gateway","S3 trigger"],a:1,ref:"https://docs.datadoghq.com/serverless/libraries_integrations/extension/"},
+  {q:"Which protocol does StatsD use?",options:["TCP","UDP","HTTP","gRPC"],a:1,ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  
+  // RUM & Synthetics (51-65)
+  {q:"What does RUM track?",options:["Server metrics","Frontend user experience","Backend traces","Infrastructure"],a:1,ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+  {q:"Which RUM metric measures speed?",options:["Core Web Vitals","Page views","Errors","Resources"],a:0,ref:"https://docs.datadoghq.com/real_user_monitoring/browser/monitoring_page_performance/"},
+  {q:"What is session replay?",options:["Video recording","User interaction replay","Error replay","Test replay"],a:1,ref:"https://docs.datadoghq.com/real_user_monitoring/session_replay/"},
+  {q:"Which browser API enables RUM?",options:["Performance API","DOM API","Fetch API","All of these"],a:3,ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+  {q:"What is RUM application ID?",options:["User ID","App identifier","Session ID","View ID"],a:1,ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+  
+  {q:"Which Synthetics test type exists?",options:["API","Browser","Multistep API","All of these"],a:3,ref:"https://docs.datadoghq.com/synthetics/"},
+  {q:"What is test frequency?",options:["Duration","Run interval","Timeout","Retry count"],a:1,ref:"https://docs.datadoghq.com/synthetics/"},
+  {q:"Which location type is available?",options:["Managed","Private","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/synthetics/private_locations/"},
+  {q:"What is browser test step?",options:["API call","User action","Assertion","Config"],a:1,ref:"https://docs.datadoghq.com/synthetics/browser_tests/"},
+  {q:"Which protocol does API test support?",options:["HTTP","WebSocket","gRPC","All of these"],a:3,ref:"https://docs.datadoghq.com/synthetics/api_tests/"},
+  
+  {q:"What is test result retention?",options:["1 month","3 months","1 year","Forever"],a:1,ref:"https://docs.datadoghq.com/synthetics/"},
+  {q:"Which browser is supported?",options:["Chrome","Firefox","Edge","All of these"],a:3,ref:"https://docs.datadoghq.com/synthetics/browser_tests/"},
+  {q:"What is alert condition?",options:["Test fails once","Test fails N times","Always","Never"],a:1,ref:"https://docs.datadoghq.com/synthetics/"},
+  {q:"Which assertion type exists?",options:["Status code","Response time","Body content","All of these"],a:3,ref:"https://docs.datadoghq.com/synthetics/api_tests/"},
+  {q:"What is mobile RUM?",options:["Web only","iOS and Android","Desktop only","Server"],a:1,ref:"https://docs.datadoghq.com/real_user_monitoring/mobile_and_tv_monitoring/"},
+  
+  // SLOs & Incident Management (66-75)
+  {q:"What is SLO target?",options:["Cost limit","Reliability percentage","Response time","Error count"],a:1,ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  {q:"Which SLO type exists?",options:["Metric-based","Monitor-based","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  {q:"What is error budget burn rate?",options:["Cost increase","Budget consumption speed","Error count","Response time"],a:1,ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  {q:"Which window type is available?",options:["Rolling","Calendar","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  {q:"What is SLO status page?",options:["Internal page","Public reliability page","Private page","Admin page"],a:1,ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  
+  {q:"Which incident severity exists?",options:["P1-P5","Critical only","High-Low","Custom"],a:0,ref:"https://docs.datadoghq.com/service_management/incident_management/"},
+  {q:"What is incident timeline?",options:["Event history","Service uptime","Response time","Error log"],a:0,ref:"https://docs.datadoghq.com/service_management/incident_management/"},
+  {q:"Which integration sends alerts?",options:["Slack","PagerDuty","OpsGenie","All of these"],a:3,ref:"https://docs.datadoghq.com/integrations/"},
+  {q:"What is postmortem?",options:["Delete incident","Incident analysis","Close ticket","Archive logs"],a:1,ref:"https://docs.datadoghq.com/service_management/incident_management/"},
+  {q:"Which role manages incidents?",options:["Admin only","Incident Commander","Anyone","Read-only"],a:1,ref:"https://docs.datadoghq.com/service_management/incident_management/"}
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 4 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  
+  alert(message);
+  window.scrollTo(0, 0);
+}
+
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+
+render();
+</script>
+</body>
+</html>
