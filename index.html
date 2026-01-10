@@ -36,13 +36,11 @@
       border-radius: 6px;
       cursor: pointer;
       font-size: 14px;
+      margin-right: 6px;
+      margin-top: 6px;
     }
-    button.secondary {
-      background: #6b7280;
-    }
-    button.dark {
-      background: #374151;
-    }
+    button.secondary { background: #6b7280; }
+    button.dark { background: #374151; }
   </style>
 </head>
 <body>
@@ -51,13 +49,11 @@
 
   <strong>Select Question Set:</strong><br/>
   <button onclick="selectSet(0)">Set 1 – Agent & Core Fundamentals</button>
-  <button onclick="selectSet(1)">Set 2 – Metrics, Timeseries & Aggregation</button>
+  <button onclick="selectSet(1)">Set 2 – Metrics & Timeseries</button>
+  <button onclick="selectSet(2)">Set 3 – Tags & Cardinality</button>
 
   <h1>Datadog Fundamentals – Practice Exam</h1>
-  <p>
-    <strong>Free & open</strong> Datadog Fundamentals practice exam.
-    No tracking, no backend.
-  </p>
+  <p><strong>Free & open</strong> Datadog Fundamentals practice exam. No tracking, no backend.</p>
 
   <div id="quiz"></div>
 
@@ -66,7 +62,7 @@
     <div id="progressText">0 / 75 answered</div>
   </div>
 
-  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+  <div>
     <button onclick="prevPage()">Previous</button>
     <button onclick="nextPage()">Next</button>
     <button onclick="resetQuiz()" class="secondary">Clear Answers</button>
@@ -79,45 +75,116 @@
 /* =========================
    QUIZ DATA
    ========================= */
-
 const quizSets = [
   {
     name: "Set 1 – Agent & Core Fundamentals",
     questions: [
-      {
-        q: "What is the primary purpose of the Datadog Agent?",
-        options: [
-          "Store metrics long-term",
-          "Collect and forward telemetry data",
-          "Create dashboards",
-          "Trigger alerts"
-        ],
-        answer: [1]
-      },
-      {
-        q: "Which key is required for the Datadog Agent to send data?",
-        options: ["Application key", "OAuth token", "API key", "SSH key"],
-        answer: [2]
-      }
+      { q: "What is the primary purpose of the Datadog Agent?",
+        options: ["Store metrics long-term","Collect and forward telemetry data","Create dashboards","Trigger alerts"],
+        answer: [1] },
+      { q: "Which key is required for the Datadog Agent to send data?",
+        options: ["Application key","OAuth token","API key","SSH key"],
+        answer: [2] }
     ]
   },
   {
-    name: "Set 2 – Metrics, Timeseries & Aggregation",
+    name: "Set 2 – Metrics & Timeseries",
+    questions: [
+      { q: "What is a metric in Datadog?",
+        options: ["A log entry","A numerical value tracked over time","An alert","A dashboard"],
+        answer: [1] },
+      { q: "Which metric type represents a point-in-time value?",
+        options: ["Gauge","Count","Rate","Histogram"],
+        answer: [0] }
+    ]
+  },
+  {
+    name: "Set 3 – Tags & Cardinality",
     questions: [
       {
-        q: "What is a metric in Datadog?",
+        q: "What is the primary purpose of tags in Datadog?",
+        options: ["Encrypt data","Filter and group data","Reduce latency","Store logs"],
+        answer: [1]
+      },
+      {
+        q: "Which tag format is recommended?",
+        options: ["key=value","key:value","value-key","tag:value:key"],
+        answer: [1]
+      },
+      {
+        q: "What is cardinality in Datadog?",
         options: [
-          "A log entry",
-          "A numerical value tracked over time",
-          "An alert definition",
-          "A dashboard widget"
+          "The number of hosts",
+          "The number of unique tag values",
+          "The size of logs",
+          "The number of dashboards"
         ],
         answer: [1]
       },
       {
-        q: "Which metric type represents a point-in-time value?",
-        options: ["Gauge", "Count", "Rate", "Histogram"],
+        q: "Why is high cardinality a problem?",
+        options: [
+          "Slower UI only",
+          "Higher cost and query complexity",
+          "Agent crashes",
+          "Data loss"
+        ],
+        answer: [1]
+      },
+      {
+        q: "Which tag is considered high-cardinality?",
+        options: [
+          "env:prod",
+          "service:web",
+          "host:i-0123456789abcdef",
+          "region:us-east-1"
+        ],
+        answer: [2]
+      },
+      {
+        q: "Which Datadog feature uses tags heavily for filtering?",
+        options: ["Dashboards","Logs","Metrics","All of the above"],
+        answer: [3]
+      },
+      {
+        q: "What is a facet in Datadog logs?",
+        options: [
+          "A metric type",
+          "An indexed log attribute",
+          "A dashboard widget",
+          "A monitor threshold"
+        ],
+        answer: [1]
+      },
+      {
+        q: "Which tags are recommended as standard?",
+        options: [
+          "env, service, version",
+          "host, pid, thread",
+          "timestamp, level",
+          "region only"
+        ],
         answer: [0]
+      },
+      {
+        q: "Where can tags be applied?",
+        options: [
+          "Only on hosts",
+          "Only on metrics",
+          "Only on logs",
+          "Hosts, metrics, logs, traces"
+        ],
+        answer: [3]
+      },
+      {
+        q: "What is metadata in Datadog?",
+        options: [
+          "Raw metric values",
+          "Contextual information about entities",
+          "Only log attributes",
+          "Billing data"
+        ],
+        answer: [1]
       }
     ]
   }
@@ -126,7 +193,6 @@ const quizSets = [
 /* =========================
    STATE
    ========================= */
-
 const QUESTIONS_PER_PAGE = 10;
 let currentSetIndex = 0;
 let currentPage = 0;
@@ -139,7 +205,6 @@ const progressText = document.getElementById("progressText");
 /* =========================
    FUNCTIONS
    ========================= */
-
 function selectSet(index) {
   currentSetIndex = index;
   reloadSet();
@@ -186,8 +251,7 @@ function updateProgress() {
 }
 
 function saveAnswers() {
-  const questions = quizSets[currentSetIndex].questions;
-  questions.forEach((_, i) => {
+  quizSets[currentSetIndex].questions.forEach((_, i) => {
     const selected = document.querySelector(`input[name="q${i}"]:checked`);
     if (selected) userAnswers[i] = [parseInt(selected.value)];
   });
@@ -224,7 +288,6 @@ function reloadSet() {
 /* =========================
    INITIAL LOAD
    ========================= */
-
 renderQuiz();
 </script>
 
