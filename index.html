@@ -329,11 +329,24 @@
 
     function changeSet() {
       currentSetIndex = parseInt(setSelect.value);
+      reloadSet();
+    }
+
+    function resetQuiz() {
+      userAnswers = {};
+      scoreDiv.textContent = '';
+      renderQuiz();
+    }
+
+    function reloadSet() {
       questions = quizSets[currentSetIndex].questions;
       currentPage = 0;
       userAnswers = {};
       scoreDiv.textContent = '';
       renderQuiz();
+    }
+
+    renderQuiz();
     }
 
     renderQuiz();
