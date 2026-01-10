@@ -19,11 +19,18 @@
     #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
     h1 { color:#1f2937; }
     .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .back-button { background:#374151; margin-bottom:20px; }
+    .back-button:hover { background:#1f2937; }
+    .check-answer-btn { background:#059669; padding:6px 12px; font-size:12px; margin-top:8px; display:inline-block; }
+    .check-answer-btn:hover { background:#047857; }
+    .check-answer-btn:disabled { background:#9ca3af; cursor:not-allowed; }
+    .answer-feedback { margin-top:8px; padding:8px; border-radius:4px; font-size:14px; }
     .set-badge { display:inline-block; background:#632ca6; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
   </style>
 </head>
 <body>
 <div class="container">
+  <button onclick="window.location.href='index.html'" class="back-button">← Back to Home</button>
   <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 1</span></h1>
   <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 1) covering all major topics. Educational use only.</p>
 
@@ -136,6 +143,31 @@ const progress = document.getElementById('progress');
 const progressText = document.getElementById('progressText');
 let answers = {};
 
+
+function checkSingleAnswer(qIndex) {
+  const question = questions[qIndex];
+  const questionDiv = quizDiv.querySelectorAll('.question')[qIndex];
+  
+  // Remove old feedback
+  const oldFeedback = questionDiv.querySelector('.answer-feedback');
+  if (oldFeedback) oldFeedback.remove();
+  
+  const feedback = document.createElement('div');
+  feedback.className = 'answer-feedback';
+  
+  if (answers[qIndex] === question.a) {
+    feedback.style.background = '#d1fae5';
+    feedback.style.color = '#065f46';
+    feedback.innerHTML = `✓ Correct! <a href="${question.ref}" target="_blank" style="color:#065f46;text-decoration:underline;">View documentation</a>`;
+  } else {
+    feedback.style.background = '#fee2e2';
+    feedback.style.color = '#991b1b';
+    feedback.innerHTML = `✗ Incorrect. The correct answer is: <strong>${question.options[question.a]}</strong><br><a href="${question.ref}" target="_blank" style="color:#991b1b;text-decoration:underline;">View documentation</a>`;
+  }
+  
+  questionDiv.appendChild(feedback);
+}
+
 function render() {
   quizDiv.innerHTML = '';
   questions.forEach((q, i) => {
@@ -149,6 +181,16 @@ function render() {
       opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
     });
     d.appendChild(opts);
+    
+    // Add check answer button
+    const checkBtn = document.createElement('button');
+    checkBtn.className = 'check-answer-btn';
+    checkBtn.textContent = 'Check Answer';
+    checkBtn.onclick = () => checkSingleAnswer(i);
+    if (answers[i] === undefined) checkBtn.disabled = true;
+    checkBtn.id = `check-btn-${i}`;
+    d.appendChild(checkBtn);
+    
     quizDiv.appendChild(d);
   });
   
@@ -158,6 +200,9 @@ function render() {
       const qNum = parseInt(this.name.substring(1));
       answers[qNum] = parseInt(this.value);
       updateProgress();
+      // Enable check answer button
+      const checkBtn = document.getElementById(`check-btn-${qNum}`);
+      if (checkBtn) checkBtn.disabled = false;
     });
   });
   
