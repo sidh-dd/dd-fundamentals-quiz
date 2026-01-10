@@ -60,12 +60,11 @@
 </head>
 <body>
   <div class="container">
-    <label for="setSelect"><strong>Select Question Set:</strong></label>
-    <select id="setSelect" style="margin:8px 0 16px 0; padding:8px; width:320px; font-size:14px;">
-      <option value="" disabled selected>-- Choose a question set --</option>
-      <option value="0">Set 1 – Agent & Core Fundamentals</option>
-      <option value="1">Set 2 – Metrics, Timeseries & Aggregation</option>
-    </select>
+    <div style="margin:8px 0 16px 0;">
+      <strong>Select Question Set:</strong><br/>
+      <button onclick="selectSet(0)" style="margin:6px 6px 0 0;">Set 1 – Agent & Core Fundamentals</button>
+      <button onclick="selectSet(1)" style="margin:6px 6px 0 0;">Set 2 – Metrics, Timeseries & Aggregation</button>
+    </div>
     <h1>Datadog Fundamentals – Practice Exam</h1>
     <p><strong>Free & open</strong> Datadog Fundamentals practice exam. This page is export-ready and can be hosted anywhere (GitHub Pages, Netlify, S3, etc.). No tracking, no backend.</p>
 
@@ -258,11 +257,14 @@
     let currentPage = 0;
     let userAnswers = {};
 
-    const setSelect = document.getElementById('setSelect');
-
+    // Default to Set 1
+    currentSetIndex = 0;
     let questions = quizSets[currentSetIndex].questions;
 
-    setSelect.addEventListener('change', changeSet);
+    function selectSet(index) {
+      currentSetIndex = index;
+      reloadSet();
+    }
 
     function renderQuiz() {
       quizDiv.innerHTML = `<h2>${quizSets[currentSetIndex].name}</h2>`;
