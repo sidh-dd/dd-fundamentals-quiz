@@ -72,10 +72,12 @@
       <div id="progressText">0 / 75 answered</div>
     </div>
 
-    <div style="display:flex; gap:8px; margin-top:16px;">
+    <div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">
       <button onclick="prevPage()">Previous</button>
       <button onclick="nextPage()">Next</button>
       <button onclick="submitQuiz()">Submit Quiz</button>
+      <button onclick="resetQuiz()" style="background:#6b7280;">Clear Answers</button>
+      <button onclick="reloadSet()" style="background:#374151;">Refresh Set</button>
     </div>
     <div id="score" class="score"></div>
   </div>
@@ -254,14 +256,9 @@
 
     const setSelect = document.getElementById('setSelect');
 
-    quizSets.forEach((set, i) => {
-      const opt = document.createElement('option');
-      opt.value = i;
-      opt.textContent = set.name;
-      setSelect.appendChild(opt);
-    });
-
     let questions = quizSets[currentSetIndex].questions;
+
+    setSelect.addEventListener('change', changeSet);
 
     function renderQuiz() {
       quizDiv.innerHTML = `<h2>${quizSets[currentSetIndex].name}</h2>`;
