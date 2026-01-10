@@ -37,21 +37,73 @@
 // SINGLE SET – 75 QUESTIONS
 // =========================
 const questions = [
+  // 1–15 Agent & Core
   {q:"What is the primary purpose of the Datadog Agent?", options:["Store metrics","Collect & forward telemetry","Create dashboards","Trigger alerts"], a:1, ref:"https://docs.datadoghq.com/agent/"},
   {q:"Which key allows the Agent to send data?", options:["Application key","API key","OAuth token","SSH key"], a:1, ref:"https://docs.datadoghq.com/account_management/api-app-keys/"},
-  {q:"Main Agent config file?", options:["agent.conf","datadog.yaml","conf.yaml","agent.yml"], a:1, ref:"https://docs.datadoghq.com/agent/configuration/"},
-  {q:"DogStatsD protocol by default?", options:["TCP","HTTP","UDP","HTTPS"], a:2, ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
-  {q:"DogStatsD default port?", options:["443","8125","9000","22"], a:1, ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  {q:"Main Datadog Agent configuration file?", options:["agent.conf","datadog.yaml","conf.yaml","agent.yml"], a:1, ref:"https://docs.datadoghq.com/agent/configuration/"},
+  {q:"Default DogStatsD protocol?", options:["TCP","HTTP","UDP","HTTPS"], a:2, ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  {q:"Default DogStatsD port?", options:["443","8125","9000","22"], a:1, ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  {q:"Which command shows Agent status?", options:["agent start","datadog-agent status","agent check","dd status"], a:1, ref:"https://docs.datadoghq.com/agent/troubleshooting/"},
+  {q:"What happens if the Agent can’t reach Datadog?", options:["Data dropped","Agent stops","Buffered and retried","Host removed"], a:2, ref:"https://docs.datadoghq.com/agent/troubleshooting/"},
+  {q:"What is Auto-discovery used for?", options:["Dashboards","Automatic integration config","Alert routing","Log storage"], a:1, ref:"https://docs.datadoghq.com/agent/autodiscovery/"},
+  {q:"Which product handles distributed tracing?", options:["Logs","Metrics","APM","RUM"], a:2, ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Canonical hostname is used to?", options:["Encrypt data","Uniquely identify a host","Reduce cost","Route logs"], a:1, ref:"https://docs.datadoghq.com/infrastructure/"},
+  {q:"Which OS resource measures processing power?", options:["Disk","RAM","CPU","Filesystem"], a:2, ref:"https://docs.datadoghq.com/infrastructure/"},
+  {q:"Which protocol does HTTP use?", options:["UDP","TCP","ICMP","ARP"], a:1, ref:"https://docs.datadoghq.com/agent/network/"},
+  {q:"Which Agent component sends logs?", options:["APM","Logs Agent","DogStatsD","Forwarder"], a:1, ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which install method supports containers?", options:["RPM","DEB","Docker Agent","Binary"], a:2, ref:"https://docs.datadoghq.com/containers/"},
+  {q:"Which integration is required for AWS metrics?", options:["CloudWatch","S3","IAM","Lambda"], a:0, ref:"https://docs.datadoghq.com/integrations/amazon_web_services/"},
+
+  // 16–30 Metrics
   {q:"What is a metric?", options:["Log entry","Numeric value over time","Alert","Dashboard"], a:1, ref:"https://docs.datadoghq.com/metrics/"},
-  {q:"Metric type for point-in-time values?", options:["Gauge","Count","Rate","Histogram"], a:0, ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"Gauge metrics represent?", options:["Counts","Rates","Point-in-time values","Logs"], a:2, ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"Count metrics are best for?", options:["Current values","Totals","Latency","Memory"], a:1, ref:"https://docs.datadoghq.com/metrics/types/"},
   {q:"Which aggregation shows totals?", options:["avg","min","sum","max"], a:2, ref:"https://docs.datadoghq.com/metrics/"},
-  {q:"What is a tag used for?", options:["Encryption","Filtering & grouping","Storage","Compression"], a:1, ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"Which visualization shows trends?", options:["Query value","Timeseries","Table","Toplist"], a:1, ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"What does rollup do?", options:["Smooth data","Delete metrics","Change units","Alert"], a:0, ref:"https://docs.datadoghq.com/metrics/advanced-filtering/"},
+  {q:"Which function converts count to rate?", options:["as_rate","avg","sum","delta"], a:0, ref:"https://docs.datadoghq.com/metrics/advanced-filtering/"},
+  {q:"Metric queries group by?", options:["facets","tags","hosts","logs"], a:1, ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"High-cardinality metrics cause?", options:["Lower cost","Higher cost","Faster UI","No effect"], a:1, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"Which metric type continuously increases?", options:["Gauge","Count","Rate","Histogram"], a:1, ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"Histogram metrics are used for?", options:["Logs","Distributions","Counts","Rates"], a:1, ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"What is timeshift used for?", options:["Delete data","Compare time periods","Alerting","Tagging"], a:1, ref:"https://docs.datadoghq.com/metrics/advanced-filtering/"},
+  {q:"Which metric source is custom?", options:["system.cpu","aws.ec2","custom.app.request","docker.cpu"], a:2, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"What unit conversion does Datadog support?", options:["None","Automatic","Manual only","Agent-side"], a:1, ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Metrics retention depends on?", options:["Plan","Region","Agent","Host count"], a:0, ref:"https://docs.datadoghq.com/metrics/"},
+
+  // 31–45 Tags & Logs
   {q:"Recommended tag format?", options:["key=value","key:value","value-key","tag=value:key"], a:1, ref:"https://docs.datadoghq.com/getting_started/tagging/"},
-  {q:"What is cardinality?", options:["Hosts count","Unique tag values","Metric size","Dashboard count"], a:1, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
-  {q:"High cardinality impact?", options:["Better dashboards","Higher cost","Faster queries","No impact"], a:1, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
-  {q:"Which view shows infrastructure visually?", options:["Dashboards","Host Map","Logs","APM"], a:1, ref:"https://docs.datadoghq.com/infrastructure/hostmap/"},
-  {q:"Which product is used for tracing?", options:["Logs","Metrics","APM","RUM"], a:2, ref:"https://docs.datadoghq.com/tracing/"},
-  {q:"Which monitor alerts on thresholds?", options:["Log","Event","Metric","Process"], a:2, ref:"https://docs.datadoghq.com/monitors/"}
+  {q:"What is cardinality?", options:["Host count","Unique tag values","Log size","Metric count"], a:1, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"Which tag is high-cardinality?", options:["env:prod","service:web","host:i-12345","region:us-east-1"], a:2, ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"Where can tags be applied?", options:["Hosts only","Metrics only","Logs only","All telemetry"], a:3, ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"What is a log facet?", options:["Metric","Indexed attribute","Dashboard","Alert"], a:1, ref:"https://docs.datadoghq.com/logs/explorer/facets/"},
+  {q:"Logs are primarily used for?", options:["Trends","Events & details","CPU","Memory"], a:1, ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Which Agent component handles logs?", options:["DogStatsD","Logs Agent","APM","Forwarder"], a:1, ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Log pipelines are used to?", options:["Store logs","Parse & enrich","Delete","Alert"], a:1, ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
+  {q:"Which format is common for logs?", options:["YAML","JSON","XML","INI"], a:1, ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is metadata?", options:["Raw data","Context info","Only tags","Billing"], a:1, ref:"https://docs.datadoghq.com/infrastructure/"},
+  {q:"Which product supports RUM?", options:["APM","Logs","Frontend monitoring","Metrics"], a:2, ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+  {q:"Logs retention is controlled by?", options:["Plan","Agent","Tags","Host"], a:0, ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Facets are primarily used for?", options:["Alerting","Filtering logs","Metrics","Dashboards"], a:1, ref:"https://docs.datadoghq.com/logs/explorer/facets/"},
+  {q:"Which logs source is valid?", options:["system","application","network","all"], a:3, ref:"https://docs.datadoghq.com/logs/"},
+  {q:"Log indexes affect?", options:["Collection","Search performance","Agent","Tags"], a:1, ref:"https://docs.datadoghq.com/logs/indexes/"},
+
+  // 46–75 Dashboards, Monitors, Networking
+  {q:"Which dashboard widget shows trends?", options:["Timeseries","Table","Toplist","Query value"], a:0, ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"Host Map shows?", options:["Logs","Infrastructure layout","Alerts","APM"], a:1, ref:"https://docs.datadoghq.com/infrastructure/hostmap/"},
+  {q:"Which monitor type alerts on metrics?", options:["Event","Log","Metric","Process"], a:2, ref:"https://docs.datadoghq.com/monitors/monitor_types/"},
+  {q:"What is a threshold monitor?", options:["Log search","Metric comparison","Host count","Trace"], a:1, ref:"https://docs.datadoghq.com/monitors/monitor_types/metric/"},
+  {q:"Monitors send notifications via?", options:["Slack","Email","Webhooks","All"], a:3, ref:"https://docs.datadoghq.com/monitors/notifications/"},
+  {q:"Which port must be open outbound?", options:["22","443","8125","3306"], a:1, ref:"https://docs.datadoghq.com/agent/network/"},
+  {q:"Which protocol is UDP used for?", options:["DogStatsD","HTTP","SSH","TLS"], a:0, ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  {q:"Which Linux command checks disk usage?", options:["top","df -h","ps","free"], a:1, ref:"https://docs.datadoghq.com/infrastructure/"},
+  {q:"CPU saturation indicates?", options:["Idle","High usage","Disk IO","Network"], a:1, ref:"https://docs.datadoghq.com/infrastructure/"},
+  {q:"Which protocol is connection-oriented?", options:["UDP","TCP","ICMP","ARP"], a:1, ref:"https://docs.datadoghq.com/agent/network/"},
+  {q:"What is latency?", options:["Errors","Delay","Throughput","CPU"], a:1, ref:"https://docs.datadoghq.com/"},
+  {q:"Which service collects container metrics?", options:["Docker Agent","Logs","APM","Forwarder"], a:0, ref:"https://docs.datadoghq.com/containers/"},
+  {q:"Which monitor reduces noise?", options:["Composite","Service","Metric","Event"], a:0, ref:"https://docs.datadoghq.com/monitors/monitor_types/composite/"},
+  {q:"What does tagging env:prod help with?", options:["Security","Filtering","Storage","Latency"], a:1, ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"Which Datadog feature correlates logs, metrics, traces?", options:["APM","Unified Service Tagging","Dashboards","RUM"], a:1, ref:"https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/"}
 ];
 
 // Pad to 75 with exam-style variations
