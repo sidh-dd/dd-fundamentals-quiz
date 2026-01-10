@@ -61,7 +61,11 @@
 <body>
   <div class="container">
     <label for="setSelect"><strong>Select Question Set:</strong></label>
-    <select id="setSelect" style="margin:8px 0 16px 0; padding:6px;" onchange="changeSet()"></select>
+    <select id="setSelect" style="margin:8px 0 16px 0; padding:8px; width:320px; font-size:14px;">
+      <option value="" disabled selected>-- Choose a question set --</option>
+      <option value="0">Set 1 – Agent & Core Fundamentals</option>
+      <option value="1">Set 2 – Metrics, Timeseries & Aggregation</option>
+    </select>
     <h1>Datadog Fundamentals – Practice Exam</h1>
     <p><strong>Free & open</strong> Datadog Fundamentals practice exam. This page is export-ready and can be hosted anywhere (GitHub Pages, Netlify, S3, etc.). No tracking, no backend.</p>
 
