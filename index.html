@@ -65,115 +65,129 @@
 
     <div id="quiz"></div>
 
+    <div style="margin:16px 0;">
+      <progress id="progress" value="0" max="75" style="width:100%;"></progress>
+      <div id="progressText">0 / 75 answered</div>
+    </div>
+
     <button onclick="submitQuiz()">Submit Quiz</button>
     <div id="score" class="score"></div>
   </div>
 
   <script>
-    const questions = [
+    /* =========================
+       QUIZ DATA (10 SETS)
+       ========================= */
+    const quizSets = [
       {
-        q: "What is the primary purpose of the Datadog Agent?",
-        options: [
-          "Store metrics long-term",
-          "Collect and forward telemetry data",
-          "Create dashboards",
-          "Trigger alerts"
-        ],
-        answer: 1
+        name: "Set 1 – Agent & Basics",
+        questions: [
+          {
+            q: "What is the primary purpose of the Datadog Agent?",
+            options: [
+              "Store metrics long-term",
+              "Collect and forward telemetry data",
+              "Create dashboards",
+              "Trigger alerts"
+            ],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/agent/"
+          },
+          {
+            q: "Which key is required for the Datadog Agent to send data?",
+            options: ["Application key", "SSH key", "API key", "OAuth token"],
+            answer: [2],
+            ref: "https://docs.datadoghq.com/account_management/api-app-keys/"
+          }
+        ]
       },
       {
-        q: "Which key is required for the Datadog Agent to send data?",
-        options: [
-          "Application key",
-          "SSH key",
-          "API key",
-          "OAuth token"
-        ],
-        answer: 2
-      },
-      {
-        q: "Which file contains the main Datadog Agent configuration?",
-        options: [
-          "/etc/datadog-agent/datadog.yaml",
-          "/etc/datadog-agent/agent.conf",
-          "/var/log/datadog/agent.log",
-          "/opt/datadog/config.yaml"
-        ],
-        answer: 0
-      },
-      {
-        q: "What protocol does DogStatsD use by default?",
-        options: [
-          "TCP",
-          "HTTP",
-          "UDP",
-          "HTTPS"
-        ],
-        answer: 2
-      },
-      {
-        q: "What are tags primarily used for in Datadog?",
-        options: [
-          "Encrypting data",
-          "Filtering and grouping data",
-          "Reducing ingestion cost",
-          "Compressing logs"
-        ],
-        answer: 1
+        name: "Set 2 – Metrics & Tags",
+        questions: [
+          {
+            q: "What are tags primarily used for in Datadog?",
+            options: [
+              "Encrypting data",
+              "Filtering and grouping data",
+              "Reducing ingestion cost",
+              "Compressing logs"
+            ],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/getting_started/tagging/"
+          }
+        ]
       }
-      // 👉 You can continue adding questions here up to 75
     ];
 
+    let currentSetIndex = Math.floor(Math.random() * quizSets.length);
+    let questions = quizSets[currentSetIndex].questions;
+
     const quizDiv = document.getElementById("quiz");
+    const scoreDiv = document.getElementById("score");
 
-    questions.forEach((item, index) => {
-      const qDiv = document.createElement("div");
-      qDiv.className = "question";
+    function renderQuiz() {
+      quizDiv.innerHTML = `<h2>${quizSets[currentSetIndex].name}</h2>`;
 
-      qDiv.innerHTML = `<p><strong>Q${index + 1}.</strong> ${item.q}</p>`;
+      questions.forEach((item, index) => {
+        const qDiv = document.createElement("div");
+        qDiv.className = "question";
 
-      const optionsDiv = document.createElement("div");
-      optionsDiv.className = "options";
+        qDiv.innerHTML = `<p><strong>Q${index + 1}.</strong> ${item.q}</p>`;
 
-      item.options.forEach((opt, i) => {
-        optionsDiv.innerHTML += `
-          <label>
-            <input type="radio" name="q${index}" value="${i}" /> ${opt}
-          </label>
-        `;
+        const optionsDiv = document.createElement("div");
+        optionsDiv.className = "options";
+
+        const multiple = item.answer.length > 1;
+
+        item.options.forEach((opt, i) => {
+          optionsDiv.innerHTML += `
+            <label>
+              <input type="${multiple ? 'checkbox' : 'radio'}" name="q${index}" value="${i}" /> ${opt}
+            </label>
+          `;
+        });
+
+        qDiv.appendChild(optionsDiv);
+        quizDiv.appendChild(qDiv);
       });
-
-      qDiv.appendChild(optionsDiv);
-      quizDiv.appendChild(qDiv);
-    });
+    }
 
     function submitQuiz() {
       let score = 0;
 
       questions.forEach((item, index) => {
-        const selected = document.querySelector(`input[name=\"q${index}\"]:checked`);
-        const qDiv = quizDiv.children[index];
-
-        const existingFeedback = qDiv.querySelector('.feedback');
-        if (existingFeedback) existingFeedback.remove();
+        const inputs = document.querySelectorAll(`input[name=\"q${index}\"]:checked`);
+        const selected = Array.from(inputs).map(i => parseInt(i.value));
+        const qDiv = quizDiv.children[index + 1];
 
         const feedback = document.createElement('div');
-        feedback.className = 'feedback';
 
-        if (selected && parseInt(selected.value) === item.answer) {
+        const correct = JSON.stringify(selected.sort()) === JSON.stringify(item.answer.sort());
+
+        if (correct) {
           score++;
-          feedback.textContent = '✔ Correct';
-          feedback.classList.add('correct');
+          feedback.innerHTML = `✔ Correct — <a href="${item.ref}" target="_blank">Reference</a>`;
+          feedback.className = 'correct';
         } else {
-          feedback.textContent = `✖ Incorrect (Correct answer: ${item.options[item.answer]})`;
-          feedback.classList.add('incorrect');
+          const answersText = item.answer.map(i => item.options[i]).join(', ');
+          feedback.innerHTML = `✖ Incorrect — Correct answer: <strong>${answersText}</strong><br/><a href="${item.ref}" target="_blank">Learn more</a>`;
+          feedback.className = 'incorrect';
         }
 
         qDiv.appendChild(feedback);
       });
 
-      document.getElementById('score').textContent = `Score: ${score} / ${questions.length}`;
+      scoreDiv.textContent = `Score: ${score} / ${questions.length}`;
     }
+
+    function loadNewSet() {
+      currentSetIndex = Math.floor(Math.random() * quizSets.length);
+      questions = quizSets[currentSetIndex].questions;
+      scoreDiv.textContent = "";
+      renderQuiz();
+    }
+
+    renderQuiz();
   </script>
 </body>
 </html>
