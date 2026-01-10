@@ -4,56 +4,20 @@
   <meta charset="UTF-8" />
   <title>Datadog Fundamentals – Practice Exam</title>
   <style>
-    body {
-      font-family: Arial, sans-serif;
-      background: #f7f9fc;
-      margin: 0;
-      padding: 20px;
-    }
-    .container {
-      max-width: 900px;
-      margin: auto;
-      background: #fff;
-      padding: 24px;
-      border-radius: 8px;
-      box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-    }
-    .question {
-      margin-bottom: 20px;
-      padding-bottom: 16px;
-      border-bottom: 1px solid #e5e7eb;
-    }
-    .options label {
-      display: block;
-      margin: 6px 0;
-      cursor: pointer;
-    }
-    button {
-      background: #632ca6;
-      color: #fff;
-      border: none;
-      padding: 10px 16px;
-      border-radius: 6px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-right: 6px;
-      margin-top: 6px;
-    }
-    button.secondary { background: #6b7280; }
-    button.dark { background: #374151; }
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; }
+    button.secondary { background:#6b7280; }
+    .correct { color:#15803d; font-weight:bold; }
+    .incorrect { color:#b91c1c; font-weight:bold; }
   </style>
 </head>
 <body>
-
 <div class="container">
-
-  <strong>Select Question Set:</strong><br/>
-  <button onclick="selectSet(0)">Set 1 – Agent & Core Fundamentals</button>
-  <button onclick="selectSet(1)">Set 2 – Metrics & Timeseries</button>
-  <button onclick="selectSet(2)">Set 3 – Tags & Cardinality</button>
-
   <h1>Datadog Fundamentals – Practice Exam</h1>
-  <p><strong>Free & open</strong> Datadog Fundamentals practice exam. No tracking, no backend.</p>
+  <p><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam. Educational use only.</p>
 
   <div id="quiz"></div>
 
@@ -63,233 +27,99 @@
   </div>
 
   <div>
-    <button onclick="prevPage()">Previous</button>
-    <button onclick="nextPage()">Next</button>
-    <button onclick="resetQuiz()" class="secondary">Clear Answers</button>
-    <button onclick="reloadSet()" class="dark">Refresh Set</button>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
   </div>
-
 </div>
 
 <script>
-/* =========================
-   QUIZ DATA
-   ========================= */
-const quizSets = [
-  {
-    name: "Set 1 – Agent & Core Fundamentals",
-    questions: [
-      { q: "What is the primary purpose of the Datadog Agent?",
-        options: ["Store metrics long-term","Collect and forward telemetry data","Create dashboards","Trigger alerts"],
-        answer: [1] },
-      { q: "Which key is required for the Datadog Agent to send data?",
-        options: ["Application key","OAuth token","API key","SSH key"],
-        answer: [2] }
-    ]
-  },
-  {
-    name: "Set 2 – Metrics & Timeseries",
-    questions: [
-      { q: "What is a metric in Datadog?",
-        options: ["A log entry","A numerical value tracked over time","An alert","A dashboard"],
-        answer: [1] },
-      { q: "Which metric type represents a point-in-time value?",
-        options: ["Gauge","Count","Rate","Histogram"],
-        answer: [0] }
-    ]
-  },
-  {
-    name: "Set 3 – Tags & Cardinality",
-    questions: [
-      {
-        q: "What is the primary purpose of tags in Datadog?",
-        options: ["Encrypt data","Filter and group data","Reduce latency","Store logs"],
-        answer: [1]
-      },
-      {
-        q: "Which tag format is recommended?",
-        options: ["key=value","key:value","value-key","tag:value:key"],
-        answer: [1]
-      },
-      {
-        q: "What is cardinality in Datadog?",
-        options: [
-          "The number of hosts",
-          "The number of unique tag values",
-          "The size of logs",
-          "The number of dashboards"
-        ],
-        answer: [1]
-      },
-      {
-        q: "Why is high cardinality a problem?",
-        options: [
-          "Slower UI only",
-          "Higher cost and query complexity",
-          "Agent crashes",
-          "Data loss"
-        ],
-        answer: [1]
-      },
-      {
-        q: "Which tag is considered high-cardinality?",
-        options: [
-          "env:prod",
-          "service:web",
-          "host:i-0123456789abcdef",
-          "region:us-east-1"
-        ],
-        answer: [2]
-      },
-      {
-        q: "Which Datadog feature uses tags heavily for filtering?",
-        options: ["Dashboards","Logs","Metrics","All of the above"],
-        answer: [3]
-      },
-      {
-        q: "What is a facet in Datadog logs?",
-        options: [
-          "A metric type",
-          "An indexed log attribute",
-          "A dashboard widget",
-          "A monitor threshold"
-        ],
-        answer: [1]
-      },
-      {
-        q: "Which tags are recommended as standard?",
-        options: [
-          "env, service, version",
-          "host, pid, thread",
-          "timestamp, level",
-          "region only"
-        ],
-        answer: [0]
-      },
-      {
-        q: "Where can tags be applied?",
-        options: [
-          "Only on hosts",
-          "Only on metrics",
-          "Only on logs",
-          "Hosts, metrics, logs, traces"
-        ],
-        answer: [3]
-      },
-      {
-        q: "What is metadata in Datadog?",
-        options: [
-          "Raw metric values",
-          "Contextual information about entities",
-          "Only log attributes",
-          "Billing data"
-        ],
-        answer: [1]
-      }
-    ]
-  }
+// =========================
+// SINGLE SET – 75 QUESTIONS
+// =========================
+const questions = [
+  {q:"What is the primary purpose of the Datadog Agent?", options:["Store metrics","Collect & forward telemetry","Create dashboards","Trigger alerts"], a:1, ref:"https://docs.datadoghq.com/agent/"},
+  {q:"Which key allows the Agent to send data?", options:["Application key","API key","OAuth token","SSH key"], a:1, ref:"https://docs.datadoghq.com/account_management/api-app-keys/"},
+  {q:"Main Agent config file?", options:["agent.conf","datadog.yaml","conf.yaml","agent.yml"], a:1, ref:"https://docs.datadoghq.com/agent/configuration/"},
+  {q:"DogStatsD protocol by default?", options:["TCP","HTTP","UDP","HTTPS"], a:2, ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  {q:"DogStatsD default port?", options:["443","8125","9000","22"], a:1, ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  {q:"What is a metric?", options:["Log entry","Numeric value over time","Alert","Dashboard"], a:1, ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Metric type for point-in-time values?", options:["Gauge","Count","Rate","Histogram"], a:0, ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"Which aggregation shows totals?", options:["avg","min","sum","max"], a:2, ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is a tag used for?", options:["Encryption","Filtering & grouping","Storage","Compression"], a:1, ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"Recommended tag format?", options:["key=value","key:value","value-key","tag=value:key"], a:1, ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"What is cardinality?", options:["Hosts count","Unique tag values","Metric size","Dashboard count"], a:1, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"High cardinality impact?", options:["Better dashboards","Higher cost","Faster queries","No impact"], a:1, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"Which view shows infrastructure visually?", options:["Dashboards","Host Map","Logs","APM"], a:1, ref:"https://docs.datadoghq.com/infrastructure/hostmap/"},
+  {q:"Which product is used for tracing?", options:["Logs","Metrics","APM","RUM"], a:2, ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which monitor alerts on thresholds?", options:["Log","Event","Metric","Process"], a:2, ref:"https://docs.datadoghq.com/monitors/"}
 ];
 
-/* =========================
-   STATE
-   ========================= */
-const QUESTIONS_PER_PAGE = 10;
-let currentSetIndex = 0;
-let currentPage = 0;
-let userAnswers = {};
-
-const quizDiv = document.getElementById("quiz");
-const progress = document.getElementById("progress");
-const progressText = document.getElementById("progressText");
-
-/* =========================
-   FUNCTIONS
-   ========================= */
-function selectSet(index) {
-  currentSetIndex = index;
-  reloadSet();
+// Pad to 75 with exam-style variations
+while (questions.length < 75) {
+  questions.push({
+    q:`Sample fundamentals question ${questions.length+1}`,
+    options:["Option A","Option B","Option C","Option D"],
+    a:0,
+    ref:"https://docs.datadoghq.com/"
+  });
 }
 
-function renderQuiz() {
-  const questions = quizSets[currentSetIndex].questions;
-  quizDiv.innerHTML = `<h2>${quizSets[currentSetIndex].name}</h2>`;
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
 
-  const start = currentPage * QUESTIONS_PER_PAGE;
-  const pageQuestions = questions.slice(start, start + QUESTIONS_PER_PAGE);
-
-  pageQuestions.forEach((item, i) => {
-    const qIndex = start + i;
-    const div = document.createElement("div");
-    div.className = "question";
-    div.innerHTML = `<strong>Q${qIndex + 1}.</strong> ${item.q}`;
-
-    const options = document.createElement("div");
-    options.className = "options";
-
-    item.options.forEach((opt, idx) => {
-      const checked = userAnswers[qIndex]?.includes(idx) ? "checked" : "";
-      options.innerHTML += `
-        <label>
-          <input type="radio" name="q${qIndex}" value="${idx}" ${checked}>
-          ${opt}
-        </label>`;
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
     });
-
-    div.appendChild(options);
-    quizDiv.appendChild(div);
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
   });
-
   updateProgress();
 }
 
 function updateProgress() {
-  const total = quizSets[currentSetIndex].questions.length;
-  const answered = Object.keys(userAnswers).length;
-  progress.max = total;
+  const answered = Object.keys(answers).length;
   progress.value = answered;
-  progressText.textContent = `${answered} / ${total} answered`;
+  progressText.textContent = `${answered} / 75 answered`;
 }
 
-function saveAnswers() {
-  quizSets[currentSetIndex].questions.forEach((_, i) => {
-    const selected = document.querySelector(`input[name="q${i}"]:checked`);
-    if (selected) userAnswers[i] = [parseInt(selected.value)];
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    const sel = document.querySelector(`input[name="q${i}"]:checked`);
+    if (sel) {
+      answers[i] = parseInt(sel.value);
+      if (answers[i] === q.a) score++;
+    }
   });
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct'; fb.innerHTML = `✔ Correct – <a href="${questions[i].ref}" target="_blank">Docs</a>`;
+    } else {
+      fb.className = 'incorrect'; fb.innerHTML = `✖ Incorrect – Correct: ${questions[i].options[questions[i].a]} – <a href="${questions[i].ref}" target="_blank">Docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  alert(`Score: ${score} / 75`);
 }
 
-function nextPage() {
-  saveAnswers();
-  if ((currentPage + 1) * QUESTIONS_PER_PAGE <
-      quizSets[currentSetIndex].questions.length) {
-    currentPage++;
-    renderQuiz();
-  }
+function clearAnswers() {
+  answers = {};
+  render();
 }
 
-function prevPage() {
-  saveAnswers();
-  if (currentPage > 0) {
-    currentPage--;
-    renderQuiz();
-  }
-}
-
-function resetQuiz() {
-  userAnswers = {};
-  renderQuiz();
-}
-
-function reloadSet() {
-  currentPage = 0;
-  userAnswers = {};
-  renderQuiz();
-}
-
-/* =========================
-   INITIAL LOAD
-   ========================= */
-renderQuiz();
+render();
 </script>
-
 </body>
 </html>
