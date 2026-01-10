@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Datadog Fundamentals – Interactive Quiz</title>
+  <title>Datadog Fundamentals – Practice Exam</title>
   <style>
     body {
       font-family: Arial, sans-serif;
@@ -18,9 +18,6 @@
       border-radius: 8px;
       box-shadow: 0 2px 8px rgba(0,0,0,0.1);
     }
-    h1 {
-      margin-top: 0;
-    }
     .question {
       margin-bottom: 20px;
       padding-bottom: 16px;
@@ -31,14 +28,6 @@
       margin: 6px 0;
       cursor: pointer;
     }
-    .correct {
-      color: #15803d;
-      font-weight: bold;
-    }
-    .incorrect {
-      color: #b91c1c;
-      font-weight: bold;
-    }
     button {
       background: #632ca6;
       color: #fff;
@@ -48,314 +37,196 @@
       cursor: pointer;
       font-size: 14px;
     }
-    button:hover {
-      opacity: 0.9;
+    button.secondary {
+      background: #6b7280;
     }
-    .score {
-      margin-top: 20px;
-      font-size: 18px;
-      font-weight: bold;
+    button.dark {
+      background: #374151;
     }
   </style>
 </head>
 <body>
-  <div class="container">
-    <div style="margin:8px 0 16px 0;">
-      <strong>Select Question Set:</strong><br/>
-      <button onclick="selectSet(0)" style="margin:6px 6px 0 0;">Set 1 – Agent & Core Fundamentals</button>
-      <button onclick="selectSet(1)" style="margin:6px 6px 0 0;">Set 2 – Metrics, Timeseries & Aggregation</button>
-    </div>
-    <h1>Datadog Fundamentals – Practice Exam</h1>
-    <p><strong>Free & open</strong> Datadog Fundamentals practice exam. This page is export-ready and can be hosted anywhere (GitHub Pages, Netlify, S3, etc.). No tracking, no backend.</p>
 
-    <div id="quiz"></div>
+<div class="container">
 
-    <div style="margin:16px 0;">
-      <progress id="progress" value="0" max="75" style="width:100%;"></progress>
-      <div id="progressText">0 / 75 answered</div>
-    </div>
+  <strong>Select Question Set:</strong><br/>
+  <button onclick="selectSet(0)">Set 1 – Agent & Core Fundamentals</button>
+  <button onclick="selectSet(1)">Set 2 – Metrics, Timeseries & Aggregation</button>
 
-    <div style="display:flex; gap:8px; margin-top:16px; flex-wrap:wrap;">
-      <button onclick="prevPage()">Previous</button>
-      <button onclick="nextPage()">Next</button>
-      <button onclick="submitQuiz()">Submit Quiz</button>
-      <button onclick="resetQuiz()" style="background:#6b7280;">Clear Answers</button>
-      <button onclick="reloadSet()" style="background:#374151;">Refresh Set</button>
-    </div>
-    <div id="score" class="score"></div>
+  <h1>Datadog Fundamentals – Practice Exam</h1>
+  <p>
+    <strong>Free & open</strong> Datadog Fundamentals practice exam.
+    No tracking, no backend.
+  </p>
+
+  <div id="quiz"></div>
+
+  <div style="margin:16px 0;">
+    <progress id="progress" value="0" max="75" style="width:100%;"></progress>
+    <div id="progressText">0 / 75 answered</div>
   </div>
 
-  <script>
-    /* =========================
-       QUIZ DATA (10 SETS)
-       ========================= */
-    const quizSets = [
+  <div style="display:flex; gap:8px; flex-wrap:wrap;">
+    <button onclick="prevPage()">Previous</button>
+    <button onclick="nextPage()">Next</button>
+    <button onclick="resetQuiz()" class="secondary">Clear Answers</button>
+    <button onclick="reloadSet()" class="dark">Refresh Set</button>
+  </div>
+
+</div>
+
+<script>
+/* =========================
+   QUIZ DATA
+   ========================= */
+
+const quizSets = [
+  {
+    name: "Set 1 – Agent & Core Fundamentals",
+    questions: [
       {
-        name: "Set 2 – Metrics, Timeseries & Aggregation",
-        questions: [
-          {
-            q: "What is a metric in Datadog?",
-            options: ["A log entry","A numerical value tracked over time","An alert definition","A dashboard widget"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/metrics/"
-          },
-          {
-            q: "Which metric type represents a value sampled at a point in time?",
-            options: ["Gauge","Count","Rate","Histogram"],
-            answer: [0],
-            ref: "https://docs.datadoghq.com/metrics/types/"
-          },
-          {
-            q: "Which aggregation is commonly used to see total requests?",
-            options: ["avg","min","sum","max"],
-            answer: [2],
-            ref: "https://docs.datadoghq.com/metrics/advanced-filtering/"
-          },
-          {
-            q: "What does a timeseries represent in Datadog?",
-            options: ["A static snapshot","Metric values plotted over time","A log stream","A host list"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/dashboards/timeseries/"
-          },
-          {
-            q: "Which function smooths metric spikes?",
-            options: ["rollup","avg","count","as_rate"],
-            answer: [0],
-            ref: "https://docs.datadoghq.com/metrics/advanced-filtering/"
-          },
-          {
-            q: "Which metric type continuously increments?",
-            options: ["Gauge","Count","Rate","Histogram"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/metrics/types/"
-          },
-          {
-            q: "Which query groups metrics by tag?",
-            options: ["by {host}","as_count","rollup","timeshift"],
-            answer: [0],
-            ref: "https://docs.datadoghq.com/metrics/"
-          },
-          {
-            q: "Which visualization is best for trends?",
-            options: ["Query value","Timeseries","Top list","Table"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/dashboards/"
-          },
-          {
-            q: "What happens if a metric has high cardinality?",
-            options: ["Faster queries","Higher cost and complexity","Better dashboards","Automatic aggregation"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/metrics/custom_metrics/"
-          },
-          {
-            q: "Which function converts a count to a rate?",
-            options: ["as_rate","rollup","avg","delta"],
-            answer: [0],
-            ref: "https://docs.datadoghq.com/metrics/advanced-filtering/"
-          }
-        ]
+        q: "What is the primary purpose of the Datadog Agent?",
+        options: [
+          "Store metrics long-term",
+          "Collect and forward telemetry data",
+          "Create dashboards",
+          "Trigger alerts"
+        ],
+        answer: [1]
       },
       {
-        name: "Set 1 – Agent & Core Fundamentals",
-        questions: [
-          {
-            q: "What is the primary purpose of the Datadog Agent?",
-            options: ["Store metrics long-term","Collect and forward telemetry data","Create dashboards","Trigger alerts"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/agent/"
-          },
-          {
-            q: "Which key is required for the Datadog Agent to send data to Datadog?",
-            options: ["Application key","OAuth token","API key","SSH key"],
-            answer: [2],
-            ref: "https://docs.datadoghq.com/account_management/api-app-keys/"
-          },
-          {
-            q: "Which file contains the main Datadog Agent configuration?",
-            options: ["/etc/datadog-agent/datadog.yaml","/etc/datadog-agent/agent.conf","/var/log/datadog/agent.log","/opt/datadog/config.yaml"],
-            answer: [0],
-            ref: "https://docs.datadoghq.com/agent/configuration/agent-configuration-files/"
-          },
-          {
-            q: "Which command provides a detailed overview of Agent status and checks?",
-            options: ["datadog-agent start","datadog-agent restart","datadog-agent status","datadog-agent install"],
-            answer: [2],
-            ref: "https://docs.datadoghq.com/agent/troubleshooting/"
-          },
-          {
-            q: "Which protocol does DogStatsD use by default?",
-            options: ["TCP","HTTP","UDP","HTTPS"],
-            answer: [2],
-            ref: "https://docs.datadoghq.com/developers/dogstatsd/"
-          },
-          {
-            q: "DogStatsD listens on which port by default?",
-            options: ["443","8125","10516","22"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/developers/dogstatsd/"
-          },
-          {
-            q: "What is an Application Key primarily used for?",
-            options: ["Sending metrics","Authenticating API requests","Encrypting logs","Installing the Agent"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/account_management/api-app-keys/"
-          },
-          {
-            q: "Which tagging format is recommended in Datadog?",
-            options: ["key=value","key:value","value-key","value:value"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/getting_started/tagging/"
-          },
-          {
-            q: "Tags in Datadog are primarily used to:",
-            options: ["Encrypt data","Filter and group data","Reduce latency","Store logs"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/getting_started/tagging/"
-          },
-          {
-            q: "Which Datadog feature provides a real-time visual map of hosts?",
-            options: ["Dashboards","Host Map","Logs Explorer","APM"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/infrastructure/hostmap/"
-          },
-          {
-            q: "What happens if the Datadog Agent cannot reach Datadog endpoints?",
-            options: ["Data is dropped","Agent shuts down","Data is buffered and retried","Logs are deleted"],
-            answer: [2],
-            ref: "https://docs.datadoghq.com/agent/troubleshooting/"
-          },
-          {
-            q: "Which integration feature automatically configures checks for containers?",
-            options: ["Manual configuration","DogStatsD","Auto-discovery","APM"],
-            answer: [2],
-            ref: "https://docs.datadoghq.com/agent/autodiscovery/"
-          },
-          {
-            q: "Which Linux resource represents processing capability?",
-            options: ["Disk","RAM","CPU","Filesystem"],
-            answer: [2],
-            ref: "https://docs.datadoghq.com/infrastructure/"
-          },
-          {
-            q: "Which protocol is used by HTTP?",
-            options: ["UDP","TCP","ICMP","ARP"],
-            answer: [1],
-            ref: "https://docs.datadoghq.com/agent/network/"
-          },
-          {
-            q: "Which Datadog monitor type is best for alerting on metric thresholds?",
-            options: ["Event monitor","Log monitor","Metric monitor","Process monitor"],
-            answer: [2],
-            ref: "https://docs.datadoghq.com/monitors/monitor_types/"
-          }
-        ]
+        q: "Which key is required for the Datadog Agent to send data?",
+        options: ["Application key", "OAuth token", "API key", "SSH key"],
+        answer: [2]
       }
-    ];
-
-    const QUESTIONS_PER_PAGE = 10;
-    let currentSetIndex = 0;
-    let currentPage = 0;
-    let userAnswers = {};
-
-    // Default to Set 1
-    currentSetIndex = 0;
-    let questions = quizSets[currentSetIndex].questions;
-
-    function selectSet(index) {
-      currentSetIndex = index;
-      reloadSet();
-    }
-
-    function renderQuiz() {
-      quizDiv.innerHTML = `<h2>${quizSets[currentSetIndex].name}</h2>`;
-
-      const start = currentPage * QUESTIONS_PER_PAGE;
-      const end = start + QUESTIONS_PER_PAGE;
-      const pageQuestions = questions.slice(start, end);
-
-      pageQuestions.forEach((item, index) => {
-        const qIndex = start + index;
-        const qDiv = document.createElement('div');
-        qDiv.className = 'question';
-        qDiv.innerHTML = `<p><strong>Q${qIndex + 1}.</strong> ${item.q}</p>`;
-
-        const optionsDiv = document.createElement('div');
-        optionsDiv.className = 'options';
-
-        const multiple = item.answer.length > 1;
-
-        item.options.forEach((opt, i) => {
-          const checked = userAnswers[qIndex]?.includes(i) ? 'checked' : '';
-          optionsDiv.innerHTML += `
-            <label>
-              <input type="${multiple ? 'checkbox' : 'radio'}" name="q${qIndex}" value="${i}" ${checked}/> ${opt}
-            </label>`;
-        });
-
-        qDiv.appendChild(optionsDiv);
-        quizDiv.appendChild(qDiv);
-      });
-
-      updateProgress();
-    }
-
-    function updateProgress() {
-      const answered = Object.keys(userAnswers).length;
-      document.getElementById('progress').value = answered;
-      document.getElementById('progressText').textContent = `${answered} / ${questions.length} answered`;
-    }
-
-    function saveAnswers() {
-      questions.forEach((_, i) => {
-        const inputs = document.querySelectorAll(`input[name=\"q${i}\"]:checked`);
-        if (inputs.length > 0) {
-          userAnswers[i] = Array.from(inputs).map(inp => parseInt(inp.value));
-        }
-      });
-    }
-
-    function nextPage() {
-      saveAnswers();
-      if ((currentPage + 1) * QUESTIONS_PER_PAGE < questions.length) {
-        currentPage++;
-        renderQuiz();
+    ]
+  },
+  {
+    name: "Set 2 – Metrics, Timeseries & Aggregation",
+    questions: [
+      {
+        q: "What is a metric in Datadog?",
+        options: [
+          "A log entry",
+          "A numerical value tracked over time",
+          "An alert definition",
+          "A dashboard widget"
+        ],
+        answer: [1]
+      },
+      {
+        q: "Which metric type represents a point-in-time value?",
+        options: ["Gauge", "Count", "Rate", "Histogram"],
+        answer: [0]
       }
-    }
+    ]
+  }
+];
 
-    function prevPage() {
-      saveAnswers();
-      if (currentPage > 0) {
-        currentPage--;
-        renderQuiz();
-      }
-    }
+/* =========================
+   STATE
+   ========================= */
 
-    function changeSet() {
-      currentSetIndex = parseInt(setSelect.value);
-      reloadSet();
-    }
+const QUESTIONS_PER_PAGE = 10;
+let currentSetIndex = 0;
+let currentPage = 0;
+let userAnswers = {};
 
-    function resetQuiz() {
-      userAnswers = {};
-      scoreDiv.textContent = '';
-      renderQuiz();
-    }
+const quizDiv = document.getElementById("quiz");
+const progress = document.getElementById("progress");
+const progressText = document.getElementById("progressText");
 
-    function reloadSet() {
-      questions = quizSets[currentSetIndex].questions;
-      currentPage = 0;
-      userAnswers = {};
-      scoreDiv.textContent = '';
-      renderQuiz();
-    }
+/* =========================
+   FUNCTIONS
+   ========================= */
 
+function selectSet(index) {
+  currentSetIndex = index;
+  reloadSet();
+}
+
+function renderQuiz() {
+  const questions = quizSets[currentSetIndex].questions;
+  quizDiv.innerHTML = `<h2>${quizSets[currentSetIndex].name}</h2>`;
+
+  const start = currentPage * QUESTIONS_PER_PAGE;
+  const pageQuestions = questions.slice(start, start + QUESTIONS_PER_PAGE);
+
+  pageQuestions.forEach((item, i) => {
+    const qIndex = start + i;
+    const div = document.createElement("div");
+    div.className = "question";
+    div.innerHTML = `<strong>Q${qIndex + 1}.</strong> ${item.q}`;
+
+    const options = document.createElement("div");
+    options.className = "options";
+
+    item.options.forEach((opt, idx) => {
+      const checked = userAnswers[qIndex]?.includes(idx) ? "checked" : "";
+      options.innerHTML += `
+        <label>
+          <input type="radio" name="q${qIndex}" value="${idx}" ${checked}>
+          ${opt}
+        </label>`;
+    });
+
+    div.appendChild(options);
+    quizDiv.appendChild(div);
+  });
+
+  updateProgress();
+}
+
+function updateProgress() {
+  const total = quizSets[currentSetIndex].questions.length;
+  const answered = Object.keys(userAnswers).length;
+  progress.max = total;
+  progress.value = answered;
+  progressText.textContent = `${answered} / ${total} answered`;
+}
+
+function saveAnswers() {
+  const questions = quizSets[currentSetIndex].questions;
+  questions.forEach((_, i) => {
+    const selected = document.querySelector(`input[name="q${i}"]:checked`);
+    if (selected) userAnswers[i] = [parseInt(selected.value)];
+  });
+}
+
+function nextPage() {
+  saveAnswers();
+  if ((currentPage + 1) * QUESTIONS_PER_PAGE <
+      quizSets[currentSetIndex].questions.length) {
+    currentPage++;
     renderQuiz();
-    }
+  }
+}
 
+function prevPage() {
+  saveAnswers();
+  if (currentPage > 0) {
+    currentPage--;
     renderQuiz();
-    }
+  }
+}
 
-    renderQuiz();
-  </script>
+function resetQuiz() {
+  userAnswers = {};
+  renderQuiz();
+}
+
+function reloadSet() {
+  currentPage = 0;
+  userAnswers = {};
+  renderQuiz();
+}
+
+/* =========================
+   INITIAL LOAD
+   ========================= */
+
+renderQuiz();
+</script>
+
 </body>
 </html>
