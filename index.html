@@ -2,176 +2,222 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <title>Datadog Fundamentals – Practice Exam</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Datadog Fundamentals – Practice Exams</title>
   <style>
-    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
-    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
-    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
-    .options label { display:block; margin:6px 0; }
-    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; }
-    button.secondary { background:#6b7280; }
-    .correct { color:#15803d; font-weight:bold; }
-    .incorrect { color:#b91c1c; font-weight:bold; }
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    
+    body {
+      font-family: Arial, sans-serif;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    
+    .container {
+      max-width: 800px;
+      width: 100%;
+      background: #fff;
+      padding: 48px;
+      border-radius: 16px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    }
+    
+    h1 {
+      color: #1f2937;
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+      text-align: center;
+    }
+    
+    .subtitle {
+      color: #6b7280;
+      font-size: 1.1rem;
+      text-align: center;
+      margin-bottom: 40px;
+      line-height: 1.6;
+    }
+    
+    .exam-sets {
+      display: grid;
+      gap: 20px;
+      margin-top: 32px;
+    }
+    
+    .exam-card {
+      background: #f9fafb;
+      border: 2px solid #e5e7eb;
+      border-radius: 12px;
+      padding: 24px;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+      display: block;
+    }
+    
+    .exam-card:hover {
+      border-color: #632ca6;
+      box-shadow: 0 8px 24px rgba(99, 44, 166, 0.15);
+      transform: translateY(-2px);
+    }
+    
+    .exam-card h2 {
+      color: #1f2937;
+      font-size: 1.5rem;
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .set-badge {
+      display: inline-block;
+      background: #632ca6;
+      color: #fff;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.875rem;
+      font-weight: bold;
+    }
+    
+    .set-badge.set-1 {
+      background: #2563eb;
+    }
+    
+    .set-badge.set-2 {
+      background: #632ca6;
+    }
+    
+    .exam-card p {
+      color: #6b7280;
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    
+    .exam-meta {
+      display: flex;
+      gap: 16px;
+      color: #9ca3af;
+      font-size: 0.875rem;
+      flex-wrap: wrap;
+    }
+    
+    .exam-meta span {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    
+    .cta-button {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: #632ca6;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      font-weight: bold;
+      margin-top: 12px;
+      transition: background 0.3s ease;
+    }
+    
+    .cta-button.set-1 {
+      background: #2563eb;
+    }
+    
+    .exam-card:hover .cta-button {
+      background: #5a2595;
+    }
+    
+    .exam-card:hover .cta-button.set-1 {
+      background: #1d4ed8;
+    }
+    
+    .footer {
+      text-align: center;
+      margin-top: 40px;
+      padding-top: 24px;
+      border-top: 1px solid #e5e7eb;
+      color: #6b7280;
+      font-size: 0.875rem;
+    }
+    
+    .footer a {
+      color: #632ca6;
+      text-decoration: none;
+    }
+    
+    .footer a:hover {
+      text-decoration: underline;
+    }
+
+    @media (max-width: 640px) {
+      .container {
+        padding: 32px 24px;
+      }
+      
+      h1 {
+        font-size: 2rem;
+      }
+    }
   </style>
 </head>
 <body>
-<div class="container">
-  <h1>Datadog Fundamentals – Practice Exam</h1>
-  <p><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam. Educational use only.</p>
-
-  <div id="quiz"></div>
-
-  <div style="margin:16px 0;">
-    <progress id="progress" value="0" max="75" style="width:100%;"></progress>
-    <div id="progressText">0 / 75 answered</div>
+  <div class="container">
+    <h1>🎯 Datadog Fundamentals</h1>
+    <p class="subtitle">
+      Practice exams to help you prepare for the Datadog Fundamentals certification. 
+      Each set contains 75 mixed questions covering all exam topics.
+    </p>
+    
+    <div class="exam-sets">
+      <a href="set1.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-1">Set 1</span></h2>
+        <p>Comprehensive 75-question practice exam covering Agent installation, metrics, tags, logs, dashboards, monitors, networking basics, and Linux fundamentals.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 minutes</span>
+          <span>🎓 All Topics</span>
+        </div>
+        <div class="cta-button set-1">
+          Start Set 1 →
+        </div>
+      </a>
+      
+      <a href="set2.html" class="exam-card">
+        <h2>Practice Exam <span class="set-badge set-2">Set 2</span></h2>
+        <p>Comprehensive 75-question practice exam covering Agent configuration, metrics, tags, APM, logs, RUM, synthetics, SLOs, incident management, and more.</p>
+        <div class="exam-meta">
+          <span>📝 75 Questions</span>
+          <span>⏱️ ~60 minutes</span>
+          <span>🎓 All Topics</span>
+        </div>
+        <div class="cta-button set-2">
+          Start Set 2 →
+        </div>
+      </a>
+      
+      <!-- Add more sets here in the future -->
+      <div style="text-align: center; padding: 32px; color: #9ca3af; font-style: italic;">
+        More practice sets coming soon...
+      </div>
+    </div>
+    
+    <div class="footer">
+      <p><strong>Note:</strong> These are unofficial practice exams for educational purposes only.</p>
+      <p style="margin-top: 8px;">
+        For official documentation, visit 
+        <a href="https://docs.datadoghq.com/" target="_blank">docs.datadoghq.com</a>
+      </p>
+    </div>
   </div>
-
-  <div>
-    <button onclick="submitQuiz()">Submit Quiz</button>
-    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
-  </div>
-</div>
-
-<script>
-// =========================
-// SINGLE SET – 75 QUESTIONS
-// =========================
-const questions = [
-// 1–15 Agent & Installation
-{q:"What is the primary purpose of the Datadog Agent?",options:["Store metrics","Collect & forward telemetry","Create dashboards","Trigger alerts"],a:1,ref:"https://docs.datadoghq.com/agent/"},
-{q:"Which key allows the Agent to send data to Datadog?",options:["Application key","API key","OAuth token","SSH key"],a:1,ref:"https://docs.datadoghq.com/account_management/api-app-keys/"},
-{q:"Which file contains the main Agent configuration?",options:["agent.conf","datadog.yaml","conf.yaml","agent.yml"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/"},
-{q:"Which command shows Agent status?",options:["agent start","datadog-agent status","agent check","dd status"],a:1,ref:"https://docs.datadoghq.com/agent/troubleshooting/"},
-{q:"What happens if the Agent cannot reach Datadog?",options:["Data dropped","Agent stops","Buffered & retried","Host removed"],a:2,ref:"https://docs.datadoghq.com/agent/troubleshooting/"},
-{q:"Which protocol does DogStatsD use by default?",options:["TCP","HTTP","UDP","HTTPS"],a:2,ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
-{q:"Which port does DogStatsD listen on by default?",options:["443","8125","9000","22"],a:1,ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
-{q:"What is Auto-discovery used for?",options:["Dashboards","Automatic integration config","Alert routing","Log storage"],a:1,ref:"https://docs.datadoghq.com/agent/autodiscovery/"},
-{q:"Which product handles distributed tracing?",options:["Logs","Metrics","APM","RUM"],a:2,ref:"https://docs.datadoghq.com/tracing/"},
-{q:"Canonical hostnames are used to?",options:["Encrypt data","Uniquely identify hosts","Reduce cost","Route logs"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
-{q:"Which OS resource measures processing power?",options:["Disk","RAM","CPU","Filesystem"],a:2,ref:"https://docs.datadoghq.com/infrastructure/"},
-{q:"Which protocol does HTTP use?",options:["UDP","TCP","ICMP","ARP"],a:1,ref:"https://docs.datadoghq.com/agent/network/"},
-{q:"Which Agent component collects logs?",options:["APM","Logs Agent","DogStatsD","Forwarder"],a:1,ref:"https://docs.datadoghq.com/logs/"},
-{q:"Which install method is used for containers?",options:["RPM","DEB","Docker Agent","Binary"],a:2,ref:"https://docs.datadoghq.com/containers/"},
-{q:"Which integration is required for AWS metrics?",options:["CloudWatch","S3","IAM","Lambda"],a:0,ref:"https://docs.datadoghq.com/integrations/amazon_web_services/"},
-
-// 16–30 Metrics
-{q:"What is a metric?",options:["Log entry","Numeric value over time","Alert","Dashboard"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
-{q:"Which metric type represents point-in-time values?",options:["Gauge","Count","Rate","Histogram"],a:0,ref:"https://docs.datadoghq.com/metrics/types/"},
-{q:"Which metric type is best for totals?",options:["Gauge","Count","Rate","Histogram"],a:1,ref:"https://docs.datadoghq.com/metrics/types/"},
-{q:"Which aggregation shows total requests?",options:["avg","min","sum","max"],a:2,ref:"https://docs.datadoghq.com/metrics/"},
-{q:"Which visualization is best for trends?",options:["Query value","Timeseries","Table","Toplist"],a:1,ref:"https://docs.datadoghq.com/dashboards/"},
-{q:"What does rollup do?",options:["Smooth data","Delete metrics","Change units","Alert"],a:0,ref:"https://docs.datadoghq.com/metrics/advanced-filtering/"},
-{q:"Which function converts count to rate?",options:["as_rate","avg","sum","delta"],a:0,ref:"https://docs.datadoghq.com/metrics/advanced-filtering/"},
-{q:"Metrics are grouped using?",options:["facets","tags","hosts","logs"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
-{q:"High-cardinality metrics cause?",options:["Lower cost","Higher cost","Faster UI","No impact"],a:1,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
-{q:"Histogram metrics are mainly used for?",options:["Counts","Distributions","Rates","Logs"],a:1,ref:"https://docs.datadoghq.com/metrics/types/"},
-{q:"Timeshift is used to?",options:["Delete data","Compare time periods","Alert","Tag"],a:1,ref:"https://docs.datadoghq.com/metrics/advanced-filtering/"},
-{q:"Which metric source is custom?",options:["system.cpu","aws.ec2","custom.app.request","docker.cpu"],a:2,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
-{q:"Metric retention depends on?",options:["Plan","Agent","Region","Host"],a:0,ref:"https://docs.datadoghq.com/metrics/"},
-{q:"Which unit conversion does Datadog support?",options:["None","Automatic","Manual only","Agent-side"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
-{q:"Which metric type continuously increases?",options:["Gauge","Count","Rate","Histogram"],a:1,ref:"https://docs.datadoghq.com/metrics/types/"},
-
-// 31–45 Tags & Logs
-{q:"Recommended tag format?",options:["key=value","key:value","value-key","tag=value:key"],a:1,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
-{q:"What is cardinality?",options:["Host count","Unique tag values","Log size","Metric count"],a:1,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
-{q:"Which tag is high-cardinality?",options:["env:prod","service:web","host:i-12345","region:us-east-1"],a:2,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
-{q:"Where can tags be applied?",options:["Hosts only","Metrics only","Logs only","All telemetry"],a:3,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
-{q:"What is a log facet?",options:["Metric","Indexed attribute","Dashboard","Alert"],a:1,ref:"https://docs.datadoghq.com/logs/explorer/facets/"},
-{q:"Logs are primarily used for?",options:["Trends","Events & details","CPU","Memory"],a:1,ref:"https://docs.datadoghq.com/logs/"},
-{q:"Which Agent component handles logs?",options:["DogStatsD","Logs Agent","APM","Forwarder"],a:1,ref:"https://docs.datadoghq.com/logs/"},
-{q:"Log pipelines are used to?",options:["Store logs","Parse & enrich","Delete","Alert"],a:1,ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
-{q:"Which format is common for logs?",options:["YAML","JSON","XML","INI"],a:1,ref:"https://docs.datadoghq.com/logs/"},
-{q:"What is metadata?",options:["Raw data","Context information","Only tags","Billing"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
-{q:"Which product supports RUM?",options:["APM","Logs","Frontend monitoring","Metrics"],a:2,ref:"https://docs.datadoghq.com/real_user_monitoring/"},
-{q:"Logs retention is controlled by?",options:["Plan","Agent","Tags","Host"],a:0,ref:"https://docs.datadoghq.com/logs/"},
-{q:"Facets are mainly used for?",options:["Alerting","Filtering logs","Metrics","Dashboards"],a:1,ref:"https://docs.datadoghq.com/logs/explorer/facets/"},
-{q:"Which logs source is valid?",options:["system","application","network","all"],a:3,ref:"https://docs.datadoghq.com/logs/"},
-{q:"Log indexes affect?",options:["Collection","Search performance","Agent","Tags"],a:1,ref:"https://docs.datadoghq.com/logs/indexes/"},
-
-// 46–75 Dashboards, Monitors, Networking & Linux
-{q:"Which dashboard widget shows trends over time?",options:["Timeseries","Table","Toplist","Query value"],a:0,ref:"https://docs.datadoghq.com/dashboards/"},
-{q:"What does the Host Map visualize?",options:["Logs","Infrastructure topology","Alerts","Traces"],a:1,ref:"https://docs.datadoghq.com/infrastructure/hostmap/"},
-{q:"Which monitor type alerts on metric thresholds?",options:["Event","Log","Metric","Process"],a:2,ref:"https://docs.datadoghq.com/monitors/monitor_types/"},
-{q:"What is a composite monitor used for?",options:["Reducing alert noise","Log searching","Metric storage","Dashboards"],a:0,ref:"https://docs.datadoghq.com/monitors/monitor_types/composite/"},
-{q:"Monitors can notify via?",options:["Email","Slack","Webhooks","All of the above"],a:3,ref:"https://docs.datadoghq.com/monitors/notifications/"},
-{q:"Which outbound port must be open for the Agent?",options:["22","443","8125","3306"],a:1,ref:"https://docs.datadoghq.com/agent/network/"},
-{q:"Which protocol does DogStatsD rely on?",options:["UDP","TCP","HTTP","TLS"],a:0,ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
-{q:"Which Linux command shows disk usage?",options:["top","df -h","ps","free"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
-{q:"Which Linux command shows memory usage?",options:["df","free","ps","uptime"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
-{q:"Which Linux command shows running processes?",options:["ps","df","free","ls"],a:0,ref:"https://docs.datadoghq.com/infrastructure/"},
-{q:"High CPU saturation usually indicates?",options:["Idle system","Resource contention","Disk failure","Network loss"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
-{q:"Which protocol is connection-oriented?",options:["UDP","TCP","ICMP","ARP"],a:1,ref:"https://docs.datadoghq.com/agent/network/"},
-{q:"What does latency measure?",options:["Errors","Delay","Throughput","Memory"],a:1,ref:"https://docs.datadoghq.com/"},
-{q:"Which Agent collects container metrics?",options:["Docker Agent","Logs Agent","APM","Forwarder"],a:0,ref:"https://docs.datadoghq.com/containers/"},
-{q:"What is Unified Service Tagging used for?",options:["Correlation across telemetry","Billing","Security","Indexing"],a:0,ref:"https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/"}
-];
-
-// Pad to 75 with exam-style variations
-while (questions.length < 75) {
-  questions.push({
-    q:`Sample fundamentals question ${questions.length+1}`,
-    options:["Option A","Option B","Option C","Option D"],
-    a:0,
-    ref:"https://docs.datadoghq.com/"
-  });
-}
-
-const quizDiv = document.getElementById('quiz');
-const progress = document.getElementById('progress');
-const progressText = document.getElementById('progressText');
-let answers = {};
-
-function render() {
-  quizDiv.innerHTML = '';
-  questions.forEach((q, i) => {
-    const d = document.createElement('div');
-    d.className = 'question';
-    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
-    const opts = document.createElement('div');
-    opts.className = 'options';
-    q.options.forEach((o, idx) => {
-      const checked = answers[i] === idx ? 'checked' : '';
-      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
-    });
-    d.appendChild(opts);
-    quizDiv.appendChild(d);
-  });
-  updateProgress();
-}
-
-function updateProgress() {
-  const answered = Object.keys(answers).length;
-  progress.value = answered;
-  progressText.textContent = `${answered} / 75 answered`;
-}
-
-function submitQuiz() {
-  let score = 0;
-  questions.forEach((q, i) => {
-    const sel = document.querySelector(`input[name="q${i}"]:checked`);
-    if (sel) {
-      answers[i] = parseInt(sel.value);
-      if (answers[i] === q.a) score++;
-    }
-  });
-  quizDiv.querySelectorAll('.question').forEach((div, i) => {
-    const fb = document.createElement('div');
-    if (answers[i] === questions[i].a) {
-      fb.className = 'correct'; fb.innerHTML = `✔ Correct – <a href="${questions[i].ref}" target="_blank">Docs</a>`;
-    } else {
-      fb.className = 'incorrect'; fb.innerHTML = `✖ Incorrect – Correct: ${questions[i].options[questions[i].a]} – <a href="${questions[i].ref}" target="_blank">Docs</a>`;
-    }
-    div.appendChild(fb);
-  });
-  alert(`Score: ${score} / 75`);
-}
-
-function clearAnswers() {
-  answers = {};
-  render();
-}
-
-render();
-</script>
 </body>
 </html>

@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 2</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#632ca6; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 2</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 2) covering all major topics. Educational use only.</p>
+
+  <div id="quiz"></div>
+
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+
+<script>
+// =========================
+// SET 2 - 75 MIXED QUESTIONS
+// =========================
+const questions = [
+  {q:"What is the primary purpose of the Datadog Agent?", options:["Store metrics in a database","Collect and forward telemetry data","Create dashboards","Trigger alert notifications"], a:1, ref:"https://docs.datadoghq.com/agent/"},
+  {q:"Which key is required for the Agent to send data to Datadog?", options:["Application key","API key","OAuth token","SSH key"], a:1, ref:"https://docs.datadoghq.com/account_management/api-app-keys/"},
+  {q:"What is the main Agent configuration file?", options:["agent.conf","datadog.yaml","conf.yaml","agent.yml"], a:1, ref:"https://docs.datadoghq.com/agent/configuration/"},
+  {q:"What protocol does DogStatsD use by default?", options:["TCP","HTTP","UDP","HTTPS"], a:2, ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  {q:"What is the default port for DogStatsD?", options:["443","8125","9000","8080"], a:1, ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  
+  {q:"What is a metric in Datadog?", options:["A log entry","A numeric value over time","An alert notification","A dashboard widget"], a:1, ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"Which metric type represents a point-in-time value?", options:["Gauge","Count","Rate","Histogram"], a:0, ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"Which metric type represents a cumulative count?", options:["Gauge","Count","Rate","Distribution"], a:1, ref:"https://docs.datadoghq.com/metrics/types/"},
+  {q:"Which aggregation function shows totals?", options:["avg","min","sum","max"], a:2, ref:"https://docs.datadoghq.com/metrics/"},
+  {q:"What is a tag used for in Datadog?", options:["Data encryption","Filtering and grouping data","Storage optimization","Compression"], a:1, ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  
+  {q:"What is the recommended tag format?", options:["key=value","key:value","value-key","tag=value:key"], a:1, ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+  {q:"What does cardinality refer to?", options:["Number of hosts","Unique combinations of tag values","Metric size in bytes","Dashboard count"], a:1, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"What is the impact of high cardinality?", options:["Better dashboards","Higher costs","Faster queries","No impact"], a:1, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  {q:"Which view visualizes infrastructure hosts?", options:["Dashboard","Host Map","Logs Explorer","APM Traces"], a:1, ref:"https://docs.datadoghq.com/infrastructure/hostmap/"},
+  {q:"Which Datadog product provides distributed tracing?", options:["Logs","Metrics","APM","RUM"], a:2, ref:"https://docs.datadoghq.com/tracing/"},
+  
+  {q:"Which monitor type alerts on metric thresholds?", options:["Log monitor","Event monitor","Metric monitor","Process monitor"], a:2, ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"What command checks Agent status on Linux?", options:["datadog-agent check","sudo datadog-agent status","agent status","check-agent"], a:1, ref:"https://docs.datadoghq.com/agent/configuration/agent-commands/"},
+  {q:"Where are integration configurations stored?", options:["datadog.yaml","conf.d directory","integrations.yaml","checks.d directory"], a:1, ref:"https://docs.datadoghq.com/agent/configuration/"},
+  {q:"What language are custom Agent checks written in?", options:["JavaScript","Python","Go","Ruby"], a:1, ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"What is a custom metric?", options:["Built-in metric","User-defined metric","System metric","Integration metric"], a:1, ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+  
+  {q:"Which API endpoint is used to submit metrics?", options:["/api/v1/logs","/api/v1/series","/api/v1/events","/api/v1/metrics"], a:1, ref:"https://docs.datadoghq.com/api/latest/metrics/"},
+  {q:"What does the Agent's 'collector' do?", options:["Sends data to Datadog","Gathers data from integrations","Creates dashboards","Triggers alerts"], a:1, ref:"https://docs.datadoghq.com/agent/"},
+  {q:"What is the 'forwarder' component?", options:["Collects metrics","Sends data to Datadog","Processes logs","Creates alerts"], a:1, ref:"https://docs.datadoghq.com/agent/"},
+  {q:"Which file format is used for Agent config?", options:["JSON","YAML","XML","TOML"], a:1, ref:"https://docs.datadoghq.com/agent/configuration/"},
+  {q:"What is an integration?", options:["A custom script","Pre-built monitoring for services","A dashboard template","An API endpoint"], a:1, ref:"https://docs.datadoghq.com/integrations/"},
+  
+  {q:"How many out-of-the-box integrations does Datadog offer?", options:["50+","100+","500+","1000+"], a:2, ref:"https://docs.datadoghq.com/integrations/"},
+  {q:"What is a dashboard?", options:["A metric","Visual representation of data","An alert","A log filter"], a:1, ref:"https://docs.datadoghq.com/dashboards/"},
+  {q:"Which widget type displays time-series data?", options:["Heatmap","Timeseries","Table","Query Value"], a:1, ref:"https://docs.datadoghq.com/dashboards/widgets/"},
+  {q:"What is a template variable?", options:["A hard-coded value","Dynamic filter for dashboards","A metric type","An integration config"], a:1, ref:"https://docs.datadoghq.com/dashboards/template_variables/"},
+  {q:"What language is used for queries?", options:["SQL","Datadog Query Language","GraphQL","Python"], a:1, ref:"https://docs.datadoghq.com/dashboards/querying/"},
+  
+  {q:"What is a monitor?", options:["A dashboard","Automated alerting system","A metric","A log"], a:1, ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"What happens when a monitor triggers?", options:["Data is deleted","Notification is sent","Agent restarts","Dashboard updates"], a:1, ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"Which notification channel is NOT supported?", options:["Email","Slack","PagerDuty","Telegram"], a:3, ref:"https://docs.datadoghq.com/monitors/notifications/"},
+  {q:"What is a monitor's 'evaluation window'?", options:["Time range for data evaluation","Dashboard refresh rate","Agent check interval","Log retention period"], a:0, ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"What is a composite monitor?", options:["Single metric monitor","Combined multiple monitors","Log monitor","APM monitor"], a:1, ref:"https://docs.datadoghq.com/monitors/types/composite/"},
+  
+  {q:"What does APM stand for?", options:["Application Performance Monitoring","Automated Process Management","API Performance Metrics","Advanced Platform Monitoring"], a:0, ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is a trace?", options:["A log entry","Request journey through services","A metric","A dashboard"], a:1, ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What is a span?", options:["Time range","Single operation in a trace","A metric","A tag"], a:1, ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which library instruments application code?", options:["DogStatsD","Datadog Tracer","Agent","API Client"], a:1, ref:"https://docs.datadoghq.com/tracing/setup/"},
+  {q:"What is service mapping?", options:["Geographic map","Visualization of service dependencies","Tag hierarchy","Metric grouping"], a:1, ref:"https://docs.datadoghq.com/tracing/services/service_map/"},
+  
+  {q:"What are logs in Datadog?", options:["Metrics","Event records from systems","Traces","Dashboards"], a:1, ref:"https://docs.datadoghq.com/logs/"},
+  {q:"What is log ingestion?", options:["Deleting logs","Collecting and sending logs","Visualizing logs","Alerting on logs"], a:1, ref:"https://docs.datadoghq.com/logs/log_collection/"},
+  {q:"What is log indexing?", options:["Storing logs for search","Deleting logs","Forwarding logs","Encrypting logs"], a:0, ref:"https://docs.datadoghq.com/logs/indexes/"},
+  {q:"What is log parsing?", options:["Deleting logs","Extracting structured data","Encrypting logs","Sending logs"], a:1, ref:"https://docs.datadoghq.com/logs/log_configuration/parsing/"},
+  {q:"What is a log pipeline?", options:["Network connection","Processing sequence for logs","Storage system","Dashboard"], a:1, ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
+  
+  {q:"What does RUM stand for?", options:["Real User Monitoring","Remote Update Management","Resource Usage Metrics","Runtime Update Module"], a:0, ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+  {q:"What does RUM measure?", options:["Server performance","User experience in browsers","Network latency","Database queries"], a:1, ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+  {q:"What is synthetics monitoring?", options:["Real user monitoring","Simulated tests","Log monitoring","Metric collection"], a:1, ref:"https://docs.datadoghq.com/synthetics/"},
+  {q:"What is an API test?", options:["User interface test","HTTP endpoint test","Database test","Agent health check"], a:1, ref:"https://docs.datadoghq.com/synthetics/api_tests/"},
+  {q:"What is a browser test?", options:["API test","Simulated user interaction","Agent check","Log parser"], a:1, ref:"https://docs.datadoghq.com/synthetics/browser_tests/"},
+  
+  {q:"What is the Infrastructure List?", options:["Agent inventory","Host and container inventory","Dashboard list","Monitor list"], a:1, ref:"https://docs.datadoghq.com/infrastructure/list/"},
+  {q:"What is the Container Map?", options:["Geographic map","Visual representation of containers","Network diagram","Tag hierarchy"], a:1, ref:"https://docs.datadoghq.com/infrastructure/containermap/"},
+  {q:"What is the Live Container view?", options:["Static container list","Real-time container metrics","Historical data","Log viewer"], a:1, ref:"https://docs.datadoghq.com/infrastructure/livecontainers/"},
+  {q:"What is the Process view?", options:["Container view","Real-time process information","Log viewer","APM view"], a:1, ref:"https://docs.datadoghq.com/infrastructure/process/"},
+  {q:"What does the Network view show?", options:["Geographic locations","Network traffic between services","Agent connections","API calls"], a:1, ref:"https://docs.datadoghq.com/network_monitoring/"},
+  
+  {q:"What is a service level objective (SLO)?", options:["Performance target","Alert threshold","Dashboard","Metric"], a:0, ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  {q:"What is SLI?", options:["Service Level Indicator","Server Load Index","System Log Interface","Security Level Isolation"], a:0, ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  {q:"What is error budget?", options:["Cost limit","Acceptable error allowance","Alert limit","Storage quota"], a:1, ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  {q:"What is incident management?", options:["Creating alerts","Coordinating response to issues","Dashboard creation","Metric collection"], a:1, ref:"https://docs.datadoghq.com/service_management/incident_management/"},
+  {q:"What is a notebook?", options:["Text editor","Collaborative investigation tool","Configuration file","Log storage"], a:1, ref:"https://docs.datadoghq.com/notebooks/"},
+  
+  {q:"What is the Event Stream?", options:["Live log feed","Timeline of system events","Metric graph","Dashboard"], a:1, ref:"https://docs.datadoghq.com/events/"},
+  {q:"What is a downtime?", options:["System outage","Scheduled alert suppression","Agent restart","Data loss"], a:1, ref:"https://docs.datadoghq.com/monitors/downtimes/"},
+  {q:"What is RBAC in Datadog?", options:["Data backup","Role-Based Access Control","Resource allocation","Alert routing"], a:1, ref:"https://docs.datadoghq.com/account_management/rbac/"},
+  {q:"What is a team in Datadog?", options:["Agent group","User collaboration group","Dashboard collection","Monitor set"], a:1, ref:"https://docs.datadoghq.com/account_management/teams/"},
+  {q:"What is SSO?", options:["System Status Overview","Single Sign-On","Secure Socket Option","Service Summary Output"], a:1, ref:"https://docs.datadoghq.com/account_management/saml/"},
+  
+  {q:"What is SAML used for?", options:["Data encryption","Authentication","Data storage","Alerting"], a:1, ref:"https://docs.datadoghq.com/account_management/saml/"},
+  {q:"What is audit logging?", options:["Application logs","Record of account activities","System logs","Error logs"], a:1, ref:"https://docs.datadoghq.com/account_management/audit_trail/"},
+  {q:"What is organization in Datadog?", options:["User group","Top-level account structure","Dashboard folder","Tag category"], a:1, ref:"https://docs.datadoghq.com/account_management/org_settings/"},
+  {q:"What is a child organization?", options:["Sub-account","User role","Team","Dashboard"], a:0, ref:"https://docs.datadoghq.com/account_management/multi_organization/"},
+  {q:"What is metric submission rate limit?", options:["Dashboard refresh rate","API rate limit per hour","Agent check frequency","Monitor evaluation interval"], a:1, ref:"https://docs.datadoghq.com/api/latest/rate-limits/"},
+  
+  {q:"What is the Datadog API used for?", options:["Only viewing dashboards","Programmatic access to platform","Only sending metrics","Only creating users"], a:1, ref:"https://docs.datadoghq.com/api/"},
+  {q:"Which HTTP method submits metrics?", options:["GET","POST","PUT","DELETE"], a:1, ref:"https://docs.datadoghq.com/api/latest/metrics/"},
+  {q:"What is a distribution metric?", options:["Simple counter","Statistical distribution across hosts","Gauge value","Text data"], a:1, ref:"https://docs.datadoghq.com/metrics/types/?tab=distribution"},
+  {q:"What is a histogram in DogStatsD?", options:["Visual chart","Client-side aggregated distribution","Server metric","Log pattern"], a:1, ref:"https://docs.datadoghq.com/metrics/types/?tab=histogram"},
+  {q:"What is the main benefit of tagging?", options:["Data encryption","Flexible data filtering and aggregation","Faster storage","Reduced costs"], a:1, ref:"https://docs.datadoghq.com/getting_started/tagging/"}
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  
+  // Add event listeners
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    // Remove old feedback
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 2 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  
+  alert(message);
+  window.scrollTo(0, 0);
+}
+
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+
+render();
+</script>
+</body>
+</html>

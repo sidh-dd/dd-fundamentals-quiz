@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Datadog Fundamentals – Practice Exam Set 1</title>
+  <style>
+    body { font-family: Arial, sans-serif; background:#f7f9fc; padding:20px; }
+    .container { max-width:900px; margin:auto; background:#fff; padding:24px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,.1); }
+    .question { margin-bottom:20px; padding-bottom:16px; border-bottom:1px solid #e5e7eb; }
+    .options label { display:block; margin:6px 0; cursor:pointer; padding:4px; }
+    .options label:hover { background:#f3f4f6; border-radius:4px; }
+    button { background:#632ca6; color:#fff; border:none; padding:10px 16px; border-radius:6px; cursor:pointer; margin-right:6px; font-size:14px; }
+    button:hover { background:#5a2595; }
+    button.secondary { background:#6b7280; }
+    button.secondary:hover { background:#5b6370; }
+    .correct { color:#15803d; font-weight:bold; margin-top:8px; }
+    .incorrect { color:#b91c1c; font-weight:bold; margin-top:8px; }
+    progress { width:100%; height:24px; }
+    #progressText { margin-top:8px; font-size:14px; color:#6b7280; }
+    h1 { color:#1f2937; }
+    .intro { color:#4b5563; line-height:1.6; margin-bottom:20px; }
+    .set-badge { display:inline-block; background:#632ca6; color:#fff; padding:4px 12px; border-radius:4px; font-size:14px; margin-left:8px; }
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 1</span></h1>
+  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 1) covering all major topics. Educational use only.</p>
+
+  <div id="quiz"></div>
+
+  <div style="margin:20px 0;">
+    <progress id="progress" value="0" max="75"></progress>
+    <div id="progressText">0 / 75 answered</div>
+  </div>
+
+  <div>
+    <button onclick="submitQuiz()">Submit Quiz</button>
+    <button onclick="clearAnswers()" class="secondary">Clear Answers</button>
+  </div>
+</div>
+
+<script>
+// =========================
+// SET 1 – 75 QUESTIONS
+// =========================
+const questions = [
+// 1–15 Agent & Installation
+{q:"What is the primary purpose of the Datadog Agent?",options:["Store metrics","Collect & forward telemetry","Create dashboards","Trigger alerts"],a:1,ref:"https://docs.datadoghq.com/agent/"},
+{q:"Which key allows the Agent to send data to Datadog?",options:["Application key","API key","OAuth token","SSH key"],a:1,ref:"https://docs.datadoghq.com/account_management/api-app-keys/"},
+{q:"Which file contains the main Agent configuration?",options:["agent.conf","datadog.yaml","conf.yaml","agent.yml"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/"},
+{q:"Which command shows Agent status?",options:["agent start","datadog-agent status","agent check","dd status"],a:1,ref:"https://docs.datadoghq.com/agent/troubleshooting/"},
+{q:"What happens if the Agent cannot reach Datadog?",options:["Data dropped","Agent stops","Buffered & retried","Host removed"],a:2,ref:"https://docs.datadoghq.com/agent/troubleshooting/"},
+{q:"Which protocol does DogStatsD use by default?",options:["TCP","HTTP","UDP","HTTPS"],a:2,ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+{q:"Which port does DogStatsD listen on by default?",options:["443","8125","9000","22"],a:1,ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+{q:"What is Auto-discovery used for?",options:["Dashboards","Automatic integration config","Alert routing","Log storage"],a:1,ref:"https://docs.datadoghq.com/agent/autodiscovery/"},
+{q:"Which product handles distributed tracing?",options:["Logs","Metrics","APM","RUM"],a:2,ref:"https://docs.datadoghq.com/tracing/"},
+{q:"Canonical hostnames are used to?",options:["Encrypt data","Uniquely identify hosts","Reduce cost","Route logs"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
+{q:"Which OS resource measures processing power?",options:["Disk","RAM","CPU","Filesystem"],a:2,ref:"https://docs.datadoghq.com/infrastructure/"},
+{q:"Which protocol does HTTP use?",options:["UDP","TCP","ICMP","ARP"],a:1,ref:"https://docs.datadoghq.com/agent/network/"},
+{q:"Which Agent component collects logs?",options:["APM","Logs Agent","DogStatsD","Forwarder"],a:1,ref:"https://docs.datadoghq.com/logs/"},
+{q:"Which install method is used for containers?",options:["RPM","DEB","Docker Agent","Binary"],a:2,ref:"https://docs.datadoghq.com/containers/"},
+{q:"Which integration is required for AWS metrics?",options:["CloudWatch","S3","IAM","Lambda"],a:0,ref:"https://docs.datadoghq.com/integrations/amazon_web_services/"},
+
+// 16–30 Metrics
+{q:"What is a metric?",options:["Log entry","Numeric value over time","Alert","Dashboard"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
+{q:"Which metric type represents point-in-time values?",options:["Gauge","Count","Rate","Histogram"],a:0,ref:"https://docs.datadoghq.com/metrics/types/"},
+{q:"Which metric type is best for totals?",options:["Gauge","Count","Rate","Histogram"],a:1,ref:"https://docs.datadoghq.com/metrics/types/"},
+{q:"Which aggregation shows total requests?",options:["avg","min","sum","max"],a:2,ref:"https://docs.datadoghq.com/metrics/"},
+{q:"Which visualization is best for trends?",options:["Query value","Timeseries","Table","Toplist"],a:1,ref:"https://docs.datadoghq.com/dashboards/"},
+{q:"What does rollup do?",options:["Smooth data","Delete metrics","Change units","Alert"],a:0,ref:"https://docs.datadoghq.com/metrics/advanced-filtering/"},
+{q:"Which function converts count to rate?",options:["as_rate","avg","sum","delta"],a:0,ref:"https://docs.datadoghq.com/metrics/advanced-filtering/"},
+{q:"Metrics are grouped using?",options:["facets","tags","hosts","logs"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
+{q:"High-cardinality metrics cause?",options:["Lower cost","Higher cost","Faster UI","No impact"],a:1,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+{q:"Histogram metrics are mainly used for?",options:["Counts","Distributions","Rates","Logs"],a:1,ref:"https://docs.datadoghq.com/metrics/types/"},
+{q:"Timeshift is used to?",options:["Delete data","Compare time periods","Alert","Tag"],a:1,ref:"https://docs.datadoghq.com/metrics/advanced-filtering/"},
+{q:"Which metric source is custom?",options:["system.cpu","aws.ec2","custom.app.request","docker.cpu"],a:2,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+{q:"Metric retention depends on?",options:["Plan","Agent","Region","Host"],a:0,ref:"https://docs.datadoghq.com/metrics/"},
+{q:"Which unit conversion does Datadog support?",options:["None","Automatic","Manual only","Agent-side"],a:1,ref:"https://docs.datadoghq.com/metrics/"},
+{q:"Which metric type continuously increases?",options:["Gauge","Count","Rate","Histogram"],a:1,ref:"https://docs.datadoghq.com/metrics/types/"},
+
+// 31–45 Tags & Logs
+{q:"Recommended tag format?",options:["key=value","key:value","value-key","tag=value:key"],a:1,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+{q:"What is cardinality?",options:["Host count","Unique tag values","Log size","Metric count"],a:1,ref:"https://docs.datadoghq.com/metrics/custom_metrics/"},
+{q:"Which tag is high-cardinality?",options:["env:prod","service:web","host:i-12345","region:us-east-1"],a:2,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+{q:"Where can tags be applied?",options:["Hosts only","Metrics only","Logs only","All telemetry"],a:3,ref:"https://docs.datadoghq.com/getting_started/tagging/"},
+{q:"What is a log facet?",options:["Metric","Indexed attribute","Dashboard","Alert"],a:1,ref:"https://docs.datadoghq.com/logs/explorer/facets/"},
+{q:"Logs are primarily used for?",options:["Trends","Events & details","CPU","Memory"],a:1,ref:"https://docs.datadoghq.com/logs/"},
+{q:"Which Agent component handles logs?",options:["DogStatsD","Logs Agent","APM","Forwarder"],a:1,ref:"https://docs.datadoghq.com/logs/"},
+{q:"Log pipelines are used to?",options:["Store logs","Parse & enrich","Delete","Alert"],a:1,ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
+{q:"Which format is common for logs?",options:["YAML","JSON","XML","INI"],a:1,ref:"https://docs.datadoghq.com/logs/"},
+{q:"What is metadata?",options:["Raw data","Context information","Only tags","Billing"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
+{q:"Which product supports RUM?",options:["APM","Logs","Frontend monitoring","Metrics"],a:2,ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+{q:"Logs retention is controlled by?",options:["Plan","Agent","Tags","Host"],a:0,ref:"https://docs.datadoghq.com/logs/"},
+{q:"Facets are mainly used for?",options:["Alerting","Filtering logs","Metrics","Dashboards"],a:1,ref:"https://docs.datadoghq.com/logs/explorer/facets/"},
+{q:"Which logs source is valid?",options:["system","application","network","all"],a:3,ref:"https://docs.datadoghq.com/logs/"},
+{q:"Log indexes affect?",options:["Collection","Search performance","Agent","Tags"],a:1,ref:"https://docs.datadoghq.com/logs/indexes/"},
+
+// 46–60 Dashboards, Monitors, Networking & Linux
+{q:"Which dashboard widget shows trends over time?",options:["Timeseries","Table","Toplist","Query value"],a:0,ref:"https://docs.datadoghq.com/dashboards/"},
+{q:"What does the Host Map visualize?",options:["Logs","Infrastructure topology","Alerts","Traces"],a:1,ref:"https://docs.datadoghq.com/infrastructure/hostmap/"},
+{q:"Which monitor type alerts on metric thresholds?",options:["Event","Log","Metric","Process"],a:2,ref:"https://docs.datadoghq.com/monitors/monitor_types/"},
+{q:"What is a composite monitor used for?",options:["Reducing alert noise","Log searching","Metric storage","Dashboards"],a:0,ref:"https://docs.datadoghq.com/monitors/monitor_types/composite/"},
+{q:"Monitors can notify via?",options:["Email","Slack","Webhooks","All of the above"],a:3,ref:"https://docs.datadoghq.com/monitors/notifications/"},
+{q:"Which outbound port must be open for the Agent?",options:["22","443","8125","3306"],a:1,ref:"https://docs.datadoghq.com/agent/network/"},
+{q:"Which protocol does DogStatsD rely on?",options:["UDP","TCP","HTTP","TLS"],a:0,ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+{q:"Which Linux command shows disk usage?",options:["top","df -h","ps","free"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
+{q:"Which Linux command shows memory usage?",options:["df","free","ps","uptime"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
+{q:"Which Linux command shows running processes?",options:["ps","df","free","ls"],a:0,ref:"https://docs.datadoghq.com/infrastructure/"},
+{q:"High CPU saturation usually indicates?",options:["Idle system","Resource contention","Disk failure","Network loss"],a:1,ref:"https://docs.datadoghq.com/infrastructure/"},
+{q:"Which protocol is connection-oriented?",options:["UDP","TCP","ICMP","ARP"],a:1,ref:"https://docs.datadoghq.com/agent/network/"},
+{q:"What does latency measure?",options:["Errors","Delay","Throughput","Memory"],a:1,ref:"https://docs.datadoghq.com/"},
+{q:"Which Agent collects container metrics?",options:["Docker Agent","Logs Agent","APM","Forwarder"],a:0,ref:"https://docs.datadoghq.com/containers/"},
+{q:"What is Unified Service Tagging used for?",options:["Correlation across telemetry","Billing","Security","Indexing"],a:0,ref:"https://docs.datadoghq.com/getting_started/tagging/unified_service_tagging/"},
+
+// 61–75 APM, SLOs, and Advanced Topics
+{q:"What does APM stand for?",options:["Application Performance Monitoring","Automated Process Management","API Performance Metrics","Advanced Platform Monitoring"],a:0,ref:"https://docs.datadoghq.com/tracing/"},
+{q:"What is a trace in APM?",options:["Log entry","Request journey through services","Metric value","Dashboard"],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+{q:"What is a span in APM?",options:["Time range","Single operation in a trace","Metric","Tag"],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+{q:"Which library instruments code for APM?",options:["DogStatsD","Datadog Tracer","Agent","API Client"],a:1,ref:"https://docs.datadoghq.com/tracing/setup/"},
+{q:"What is service mapping?",options:["Geographic map","Visualization of service dependencies","Tag hierarchy","Metric grouping"],a:1,ref:"https://docs.datadoghq.com/tracing/services/service_map/"},
+{q:"What is an SLO?",options:["Service Level Objective","Server Load Optimization","System Log Output","Security Level Option"],a:0,ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+{q:"What is SLI?",options:["Service Level Indicator","Server Load Index","System Log Interface","Security Level Isolation"],a:0,ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+{q:"What is error budget?",options:["Cost limit","Acceptable error allowance","Alert limit","Storage quota"],a:1,ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+{q:"What does RUM stand for?",options:["Real User Monitoring","Remote Update Management","Resource Usage Metrics","Runtime Update Module"],a:0,ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+{q:"What is synthetics monitoring?",options:["Real user monitoring","Simulated proactive tests","Log monitoring","Metric collection"],a:1,ref:"https://docs.datadoghq.com/synthetics/"},
+{q:"What is an API test in Synthetics?",options:["UI test","HTTP endpoint test","Database test","Agent check"],a:1,ref:"https://docs.datadoghq.com/synthetics/api_tests/"},
+{q:"What is incident management used for?",options:["Creating alerts","Coordinating response to issues","Dashboard creation","Metric collection"],a:1,ref:"https://docs.datadoghq.com/service_management/incident_management/"},
+{q:"What is RBAC in Datadog?",options:["Data backup","Role-Based Access Control","Resource allocation","Alert routing"],a:1,ref:"https://docs.datadoghq.com/account_management/rbac/"},
+{q:"What is a downtime in monitoring?",options:["System outage","Scheduled alert suppression","Agent restart","Data loss"],a:1,ref:"https://docs.datadoghq.com/monitors/downtimes/"},
+{q:"What is the Event Stream used for?",options:["Log viewing","Timeline of system events","Metric graphs","Dashboard"],a:1,ref:"https://docs.datadoghq.com/events/"}
+];
+
+const quizDiv = document.getElementById('quiz');
+const progress = document.getElementById('progress');
+const progressText = document.getElementById('progressText');
+let answers = {};
+
+function render() {
+  quizDiv.innerHTML = '';
+  questions.forEach((q, i) => {
+    const d = document.createElement('div');
+    d.className = 'question';
+    d.innerHTML = `<strong>Q${i+1}.</strong> ${q.q}`;
+    const opts = document.createElement('div');
+    opts.className = 'options';
+    q.options.forEach((o, idx) => {
+      const checked = answers[i] === idx ? 'checked' : '';
+      opts.innerHTML += `<label><input type="radio" name="q${i}" value="${idx}" ${checked}> ${o}</label>`;
+    });
+    d.appendChild(opts);
+    quizDiv.appendChild(d);
+  });
+  
+  // Add event listeners
+  document.querySelectorAll('input[type="radio"]').forEach(radio => {
+    radio.addEventListener('change', function() {
+      const qNum = parseInt(this.name.substring(1));
+      answers[qNum] = parseInt(this.value);
+      updateProgress();
+    });
+  });
+  
+  updateProgress();
+}
+
+function updateProgress() {
+  const answered = Object.keys(answers).length;
+  progress.value = answered;
+  progressText.textContent = `${answered} / 75 answered`;
+}
+
+function submitQuiz() {
+  let score = 0;
+  questions.forEach((q, i) => {
+    if (answers[i] === q.a) score++;
+  });
+  
+  quizDiv.querySelectorAll('.question').forEach((div, i) => {
+    // Remove old feedback
+    const oldFeedback = div.querySelector('.correct, .incorrect');
+    if (oldFeedback) oldFeedback.remove();
+    
+    const fb = document.createElement('div');
+    if (answers[i] === questions[i].a) {
+      fb.className = 'correct';
+      fb.innerHTML = `✓ Correct! <a href="${questions[i].ref}" target="_blank" style="color:#15803d;">View docs</a>`;
+    } else {
+      fb.className = 'incorrect';
+      fb.innerHTML = `✗ Incorrect. Correct answer: <strong>${questions[i].options[questions[i].a]}</strong> <a href="${questions[i].ref}" target="_blank" style="color:#b91c1c;">View docs</a>`;
+    }
+    div.appendChild(fb);
+  });
+  
+  const percentage = Math.round((score / 75) * 100);
+  let message = `Set 1 Score: ${score} / 75 (${percentage}%)`;
+  if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else message += "\n\nKeep studying! Review the documentation.";
+  
+  alert(message);
+  window.scrollTo(0, 0);
+}
+
+function clearAnswers() {
+  if (confirm('Clear all answers and feedback?')) {
+    answers = {};
+    render();
+    window.scrollTo(0, 0);
+  }
+}
+
+render();
+</script>
+</body>
+</html>
