@@ -60,6 +60,8 @@
 </head>
 <body>
   <div class="container">
+    <label for="setSelect"><strong>Select Question Set:</strong></label>
+    <select id="setSelect" style="margin:8px 0 16px 0; padding:6px;" onchange="changeSet()"></select>
     <h1>Datadog Fundamentals – Practice Exam</h1>
     <p><strong>Free & open</strong> Datadog Fundamentals practice exam. This page is export-ready and can be hosted anywhere (GitHub Pages, Netlify, S3, etc.). No tracking, no backend.</p>
 
@@ -70,7 +72,11 @@
       <div id="progressText">0 / 75 answered</div>
     </div>
 
-    <button onclick="submitQuiz()">Submit Quiz</button>
+    <div style="display:flex; gap:8px; margin-top:16px;">
+      <button onclick="prevPage()">Previous</button>
+      <button onclick="nextPage()">Next</button>
+      <button onclick="submitQuiz()">Submit Quiz</button>
+    </div>
     <div id="score" class="score"></div>
   </div>
 
@@ -79,6 +85,71 @@
        QUIZ DATA (10 SETS)
        ========================= */
     const quizSets = [
+      {
+        name: "Set 2 – Metrics, Timeseries & Aggregation",
+        questions: [
+          {
+            q: "What is a metric in Datadog?",
+            options: ["A log entry","A numerical value tracked over time","An alert definition","A dashboard widget"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/metrics/"
+          },
+          {
+            q: "Which metric type represents a value sampled at a point in time?",
+            options: ["Gauge","Count","Rate","Histogram"],
+            answer: [0],
+            ref: "https://docs.datadoghq.com/metrics/types/"
+          },
+          {
+            q: "Which aggregation is commonly used to see total requests?",
+            options: ["avg","min","sum","max"],
+            answer: [2],
+            ref: "https://docs.datadoghq.com/metrics/advanced-filtering/"
+          },
+          {
+            q: "What does a timeseries represent in Datadog?",
+            options: ["A static snapshot","Metric values plotted over time","A log stream","A host list"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/dashboards/timeseries/"
+          },
+          {
+            q: "Which function smooths metric spikes?",
+            options: ["rollup","avg","count","as_rate"],
+            answer: [0],
+            ref: "https://docs.datadoghq.com/metrics/advanced-filtering/"
+          },
+          {
+            q: "Which metric type continuously increments?",
+            options: ["Gauge","Count","Rate","Histogram"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/metrics/types/"
+          },
+          {
+            q: "Which query groups metrics by tag?",
+            options: ["by {host}","as_count","rollup","timeshift"],
+            answer: [0],
+            ref: "https://docs.datadoghq.com/metrics/"
+          },
+          {
+            q: "Which visualization is best for trends?",
+            options: ["Query value","Timeseries","Top list","Table"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/dashboards/"
+          },
+          {
+            q: "What happens if a metric has high cardinality?",
+            options: ["Faster queries","Higher cost and complexity","Better dashboards","Automatic aggregation"],
+            answer: [1],
+            ref: "https://docs.datadoghq.com/metrics/custom_metrics/"
+          },
+          {
+            q: "Which function converts a count to a rate?",
+            options: ["as_rate","rollup","avg","delta"],
+            answer: [0],
+            ref: "https://docs.datadoghq.com/metrics/advanced-filtering/"
+          }
+        ]
+      },
       {
         name: "Set 1 – Agent & Core Fundamentals",
         questions: [
