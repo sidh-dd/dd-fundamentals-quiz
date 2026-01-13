@@ -70,7 +70,7 @@ const questions = [
   {q:"Which view visualizes infrastructure hosts?", options:["Dashboard","Host Map","Logs Explorer","APM Traces"], a:1, ref:"https://docs.datadoghq.com/infrastructure/hostmap/"},
   {q:"Which Datadog product provides distributed tracing?", options:["Logs","Metrics","APM","RUM"], a:2, ref:"https://docs.datadoghq.com/tracing/"},
   
-  {q:"Which monitor type alerts on metric thresholds?", options:["Log monitor","Event monitor","Metric monitor","Process monitor"], a:2, ref:"https://docs.datadoghq.com/monitors/"},
+  {q:"What is the default monitor evaluation frequency?", options:["30 seconds","1 minute","5 minutes","10 minutes"], a:1, ref:"https://docs.datadoghq.com/monitors/configuration/"},
   {q:"What command checks Agent status on Linux?", options:["datadog-agent check","sudo datadog-agent status","agent status","check-agent"], a:1, ref:"https://docs.datadoghq.com/agent/configuration/agent-commands/"},
   {q:"Where are integration configurations stored?", options:["datadog.yaml","conf.d directory","integrations.yaml","checks.d directory"], a:1, ref:"https://docs.datadoghq.com/agent/configuration/"},
   {q:"What language are custom Agent checks written in?", options:["JavaScript","Python","Go","Ruby"], a:1, ref:"https://docs.datadoghq.com/developers/custom_checks/"},
@@ -94,11 +94,11 @@ const questions = [
   {q:"What is a monitor's 'evaluation window'?", options:["Time range for data evaluation","Dashboard refresh rate","Agent check interval","Log retention period"], a:0, ref:"https://docs.datadoghq.com/monitors/"},
   {q:"What is a composite monitor?", options:["Single metric monitor","Combined multiple monitors","Log monitor","APM monitor"], a:1, ref:"https://docs.datadoghq.com/monitors/types/composite/"},
   
-  {q:"What does APM stand for?", options:["Application Performance Monitoring","Automated Process Management","API Performance Metrics","Advanced Platform Monitoring"], a:0, ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which APM feature connects code performance to traces?", options:["Code profiling","Service mapping","Trace search","Resource page"], a:0, ref:"https://docs.datadoghq.com/profiler/"},
   {q:"What is a trace?", options:["A log entry","Request journey through services","A metric","A dashboard"], a:1, ref:"https://docs.datadoghq.com/tracing/"},
   {q:"What is a span?", options:["Time range","Single operation in a trace","A metric","A tag"], a:1, ref:"https://docs.datadoghq.com/tracing/"},
   {q:"Which library instruments application code?", options:["DogStatsD","Datadog Tracer","Agent","API Client"], a:1, ref:"https://docs.datadoghq.com/tracing/setup/"},
-  {q:"What is service mapping?", options:["Geographic map","Visualization of service dependencies","Tag hierarchy","Metric grouping"], a:1, ref:"https://docs.datadoghq.com/tracing/services/service_map/"},
+  {q:"Which metric is automatically generated from APM traces?", options:["trace.requests","apm.service.hits","trace.hits","All of these"], a:3, ref:"https://docs.datadoghq.com/tracing/metrics/"},
   
   {q:"What are logs in Datadog?", options:["Metrics","Event records from systems","Traces","Dashboards"], a:1, ref:"https://docs.datadoghq.com/logs/"},
   {q:"What is log ingestion?", options:["Deleting logs","Collecting and sending logs","Visualizing logs","Alerting on logs"], a:1, ref:"https://docs.datadoghq.com/logs/log_collection/"},
@@ -106,9 +106,9 @@ const questions = [
   {q:"What is log parsing?", options:["Deleting logs","Extracting structured data","Encrypting logs","Sending logs"], a:1, ref:"https://docs.datadoghq.com/logs/log_configuration/parsing/"},
   {q:"What is a log pipeline?", options:["Network connection","Processing sequence for logs","Storage system","Dashboard"], a:1, ref:"https://docs.datadoghq.com/logs/log_configuration/pipelines/"},
   
-  {q:"What does RUM stand for?", options:["Real User Monitoring","Remote Update Management","Resource Usage Metrics","Runtime Update Module"], a:0, ref:"https://docs.datadoghq.com/real_user_monitoring/"},
+  {q:"Which browser API does RUM primarily use for performance tracking?", options:["Performance API","Navigation API","Timing API","Resource API"], a:0, ref:"https://docs.datadoghq.com/real_user_monitoring/browser/monitoring_page_performance/"},
   {q:"What does RUM measure?", options:["Server performance","User experience in browsers","Network latency","Database queries"], a:1, ref:"https://docs.datadoghq.com/real_user_monitoring/"},
-  {q:"What is synthetics monitoring?", options:["Real user monitoring","Simulated tests","Log monitoring","Metric collection"], a:1, ref:"https://docs.datadoghq.com/synthetics/"},
+  {q:"What is the minimum test frequency for Synthetics tests?", options:["1 minute","5 minutes","10 minutes","15 minutes"], a:0, ref:"https://docs.datadoghq.com/synthetics/"},
   {q:"What is an API test?", options:["User interface test","HTTP endpoint test","Database test","Agent health check"], a:1, ref:"https://docs.datadoghq.com/synthetics/api_tests/"},
   {q:"What is a browser test?", options:["API test","Simulated user interaction","Agent check","Log parser"], a:1, ref:"https://docs.datadoghq.com/synthetics/browser_tests/"},
   
@@ -119,14 +119,14 @@ const questions = [
   {q:"What does the Network view show?", options:["Geographic locations","Network traffic between services","Agent connections","API calls"], a:1, ref:"https://docs.datadoghq.com/network_monitoring/"},
   
   {q:"What is a service level objective (SLO)?", options:["Performance target","Alert threshold","Dashboard","Metric"], a:0, ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
-  {q:"What is SLI?", options:["Service Level Indicator","Server Load Index","System Log Interface","Security Level Isolation"], a:0, ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
-  {q:"What is error budget?", options:["Cost limit","Acceptable error allowance","Alert limit","Storage quota"], a:1, ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  {q:"What is the recommended SLO target for non-critical services?", options:["99%","99.9%","99.99%","95%"], a:3, ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
+  {q:"How is error budget calculated?", options:["100% - SLO target","SLO target - actual","Actual - target","100% - actual"], a:0, ref:"https://docs.datadoghq.com/service_management/service_level_objectives/"},
   {q:"What is incident management?", options:["Creating alerts","Coordinating response to issues","Dashboard creation","Metric collection"], a:1, ref:"https://docs.datadoghq.com/service_management/incident_management/"},
   {q:"What is a notebook?", options:["Text editor","Collaborative investigation tool","Configuration file","Log storage"], a:1, ref:"https://docs.datadoghq.com/notebooks/"},
   
   {q:"What is the Event Stream?", options:["Live log feed","Timeline of system events","Metric graph","Dashboard"], a:1, ref:"https://docs.datadoghq.com/events/"},
   {q:"What is a downtime?", options:["System outage","Scheduled alert suppression","Agent restart","Data loss"], a:1, ref:"https://docs.datadoghq.com/monitors/downtimes/"},
-  {q:"What is RBAC in Datadog?", options:["Data backup","Role-Based Access Control","Resource allocation","Alert routing"], a:1, ref:"https://docs.datadoghq.com/account_management/rbac/"},
+  {q:"Which default role has the most permissions in Datadog?", options:["Admin","Standard","Read-Only","Owner"], a:0, ref:"https://docs.datadoghq.com/account_management/rbac/permissions/"},
   {q:"What is a team in Datadog?", options:["Agent group","User collaboration group","Dashboard collection","Monitor set"], a:1, ref:"https://docs.datadoghq.com/account_management/teams/"},
   {q:"What is SSO?", options:["System Status Overview","Single Sign-On","Secure Socket Option","Service Summary Output"], a:1, ref:"https://docs.datadoghq.com/account_management/saml/"},
   

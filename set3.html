@@ -65,7 +65,7 @@ const questions = [
   {q:"What is the minimum supported Python version for Agent checks?",options:["Python 2.7","Python 3.6","Python 3.8","Python 3.10"],a:2,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
   {q:"Which environment variable sets the API key?",options:["DATADOG_KEY","DD_API_KEY","API_KEY","DATADOG_API"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/"},
   
-  {q:"What does the Agent's dogstatsd_stats setting do?",options:["Disable DogStatsD","Enable DogStatsD metrics","Set port","Configure buffer"],a:1,ref:"https://docs.datadoghq.com/developers/dogstatsd/"},
+  {q:"What port does the Agent API listen on by default?",options:["5000","5001","8126","8125"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/agent-commands/"},
   {q:"Which Agent component handles system metrics?",options:["Core check","Integration check","Custom check","External check"],a:0,ref:"https://docs.datadoghq.com/agent/"},
   {q:"What is the purpose of Agent proxy configuration?",options:["Speed up data","Route through proxy server","Encrypt data","Compress data"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/proxy/"},
   {q:"Which file format does the Agent use for checks?",options:["JSON","YAML","XML","TOML"],a:1,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
@@ -111,7 +111,7 @@ const questions = [
   
   // Dashboards & Visualization (46-60)
   {q:"Which dashboard type is editable by anyone?",options:["Standard","Shared","Public","Custom"],a:0,ref:"https://docs.datadoghq.com/dashboards/"},
-  {q:"What is a template variable?",options:["Fixed value","Dynamic dashboard filter","Widget type","API parameter"],a:1,ref:"https://docs.datadoghq.com/dashboards/template_variables/"},
+  {q:"Which template variable syntax allows default values?",options:["$var.default()","$var{default}","${var:default}","$var|default"],a:0,ref:"https://docs.datadoghq.com/dashboards/template_variables/"},
   {q:"Which widget shows single number?",options:["Timeseries","Query value","Table","Heatmap"],a:1,ref:"https://docs.datadoghq.com/dashboards/widgets/query_value/"},
   {q:"What is dashboard JSON used for?",options:["Data storage","Dashboard as code","API calls","Exports only"],a:1,ref:"https://docs.datadoghq.com/dashboards/"},
   {q:"Which widget displays geographic data?",options:["Geomap","World map","Host map","Network map"],a:0,ref:"https://docs.datadoghq.com/dashboards/widgets/geomap/"},
