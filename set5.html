@@ -32,11 +32,11 @@
 <div class="container">
   <button onclick="window.location.href='index'" class="back-button">← Back to Home</button>
   <h1>Datadog Fundamentals – Practice Exam <span class="set-badge">Set 5</span></h1>
-  <p class="intro"><strong>Unofficial</strong> 75-question Datadog Fundamentals practice exam (Set 5) covering all major topics. Educational use only.</p>
+  <p class="intro"><strong>Unofficial</strong> 88-question Datadog Fundamentals practice exam (Set 5) covering all major topics. Educational use only.</p>
   <div id="quiz"></div>
   <div style="margin:20px 0;">
-    <progress id="progress" value="0" max="75"></progress>
-    <div id="progressText">0 / 75 answered</div>
+    <progress id="progress" value="0" max="88"></progress>
+    <div id="progressText">0 / 88 answered</div>
   </div>
   <div>
     <button onclick="submitQuiz()">Submit Quiz</button>
@@ -117,7 +117,26 @@ const questions = [
   {q:"Which overhead does profiler add?",options:["None","<1%","5-10%","20%+"],a:1,ref:"https://docs.datadoghq.com/profiler/"},
   {q:"What is dynamic instrumentation?",options:["Auto tracing","Add logs without restart","Manual coding","Agent config"],a:1,ref:"https://docs.datadoghq.com/dynamic_instrumentation/"},
   {q:"Which IDE is supported?",options:["VSCode","IntelliJ","Both","Neither"],a:2,ref:"https://docs.datadoghq.com/developers/ide_plugins/"},
-  {q:"What is API catalog?",options:["API list","API performance tracking","API docs","All of these"],a:3,ref:"https://docs.datadoghq.com/tracing/api_catalog/"}
+  {q:"What is API catalog?",options:["API list","API performance tracking","API docs","All of these"],a:3,ref:"https://docs.datadoghq.com/tracing/api_catalog/"},
+  
+  // Custom Checks
+  {q:"What is the base class for custom Agent checks?",options:["Check","AgentCheck","CustomCheck","BaseCheck"],a:1,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"Which method must be implemented in a custom check?",options:["run()","check()","execute()","collect()"],a:1,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"Where are custom check files located?",options:["/etc/datadog/checks.d/","/opt/datadog/checks/","/var/datadog/custom/","/usr/local/datadog/"],a:0,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"What is the return type of check() method?",options:["Dictionary","None","Boolean","String"],a:1,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"Which method submits a custom metric in a check?",options:["self.send()","self.gauge()","self.metric()","self.submit()"],a:1,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"What is the custom check configuration directory?",options:["conf.d/","checks.d/","config.d/","custom.d/"],a:0,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  {q:"Which log level is recommended for custom check debugging?",options:["INFO","DEBUG","WARNING","TRACE"],a:1,ref:"https://docs.datadoghq.com/developers/custom_checks/"},
+  
+  // Agent Ports
+  {q:"What port does the APM trace Agent listen on?",options:["8125","8126","5000","5001"],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"What protocol does port 8126 use?",options:["UDP","TCP","Both UDP and TCP","HTTP only"],a:1,ref:"https://docs.datadoghq.com/tracing/"},
+  {q:"Which port is used for Agent GUI on Windows?",options:["8080","5002","3000","9000"],a:1,ref:"https://docs.datadoghq.com/agent/basic_agent_usage/windows/"},
+  {q:"What is the default port for the Agent metrics endpoint?",options:["5000","5001","5002","5003"],a:1,ref:"https://docs.datadoghq.com/agent/configuration/agent-commands/"},
+  {q:"Which port does the process Agent use?",options:["6062","6063","7062","8062"],a:0,ref:"https://docs.datadoghq.com/infrastructure/process/"},
+  {q:"What port does live process monitoring expose?",options:["6062","6063","6162","8162"],a:1,ref:"https://docs.datadoghq.com/infrastructure/process/"},
+  {q:"Which port is used for cluster Agent communication?",options:["5000","5005","5050","5555"],a:1,ref:"https://docs.datadoghq.com/containers/cluster_agent/"},
+  {q:"What is the default port for the security Agent?",options:["5008","5010","6062","7062"],a:0,ref:"https://docs.datadoghq.com/security/"}
 ];
 
 const quizDiv = document.getElementById('quiz');
@@ -189,7 +208,7 @@ function render() {
 function updateProgress() {
   const answered = Object.keys(answers).length;
   progress.value = answered;
-  progressText.textContent = `${answered} / 75 answered`;
+  progressText.textContent = `${answered} / 88 answered`;
 }
 function submitQuiz() {
   let score = 0;
@@ -209,10 +228,10 @@ function submitQuiz() {
     }
     div.appendChild(fb);
   });
-  const percentage = Math.round((score / 75) * 100);
-  let message = `Set 5 Score: ${score} / 75 (${percentage}%)`;
+  const percentage = Math.round((score / 88) * 100);
+  let message = `Set 5 Score: ${score} / 88 (${percentage}%)`;
   if (percentage >= 80) message += "\n\nExcellent! You're well prepared!";
-  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers.";
+  else if (percentage >= 70) message += "\n\nGood job! Review incorrect answers!";
   else message += "\n\nKeep studying! Review the documentation.";
   alert(message);
   window.scrollTo(0, 0);
