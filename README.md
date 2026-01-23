@@ -13,3 +13,5 @@ Unofficial Datadog Fundamentals practice quiz.
 ## Disclaimer
 This project is not affiliated with or endorsed by Datadog.
 All questions are original and provided for educational purposes.
+
+<!-- Test comment - verifying git push functionality -->
